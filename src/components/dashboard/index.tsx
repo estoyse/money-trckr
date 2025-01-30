@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useSupabase } from "../supabaseProvider";
 import Accounts from "./accounts";
 import Overview from "./overview";
@@ -15,12 +15,7 @@ const Dashboard = () => {
     totalTransactions: 0,
     accounts: [],
   });
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     const { data, error } = await supabase
       .from("users")
@@ -30,7 +25,6 @@ const Dashboard = () => {
       console.error("Error fetching data:", error);
       return;
     }
-    console.log(data);
     if (data) {
       setData(data[0] as UserOverview);
     } else {
@@ -40,13 +34,18 @@ const Dashboard = () => {
     }
 
     setLoading(false);
-  };
+  }, [supabase]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   return (
-    <div className='p-2 lg:p-6 lg:pt-2 max-w-7xl mx-auto'>
+    <div className='p-2 lg:p-6 lg:pt-2 max-w-7xl mx-auto w-full'>
       <Overview data={data} loading={loading} />
       <Accounts data={data} loading={loading} />
       <RecentTransactions />
+      {/* <ExpenseList /> */}
     </div>
   );
 };

@@ -1,6 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "./components/theme-provider";
-import BottomBar from "./components/bottomBar";
 import Dashboard from "./components/dashboard";
 import { SupabaseProvider } from "./components/supabaseProvider";
 
@@ -9,7 +8,7 @@ function App() {
     <SupabaseProvider>
       <ThemeProvider defaultTheme='dark' storageKey='vite-ui-theme'>
         <Router>
-          <BottomBar />
+          {/* <BottomBar /> */}
 
           <Routes>
             <Route path='/' element={<Dashboard />} />

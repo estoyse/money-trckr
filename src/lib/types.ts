@@ -12,3 +12,12 @@ export interface Account {
   balance: number;
   icon: string;
 }
+export type Transaction = {
+  amount: number;
+  created_at: string;
+  id: string;
+  location: string;
+  transaction_date: string;
+  type: number;
+  user_id: string;
+};
