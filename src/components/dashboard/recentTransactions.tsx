@@ -14,16 +14,23 @@ import { useSupabase } from "../supabaseProvider";
 import type { Transaction } from "@/lib/types";
 import { formatCurrency } from "@/lib/formatCurrency";
 import { Skeleton } from "../ui/skeleton";
+import { RealtimeChannel } from "@supabase/supabase-js";
 import TransactionDetails from "./TransactionDetails";
 
 const RecentTransactions = () => {
   const supabase = useSupabase();
-
   const [loading, setLoading] = useState(true);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [total, setTotal] = useState(0);
 
-  const fetchTransactions = useCallback(async () => {
+  const calculateTotal = (data: Transaction[]) => {
+    return data.reduce((a, b) => {
+      if (b.type === 3) return a + b.amount;
+      return a - b.amount;
+    }, 0);
+  };
+
+  const fetchNotifications = useCallback(async () => {
     setLoading(true);
     const { data, error } = await supabase
       .from("notifications")
@@ -36,19 +43,77 @@ const RecentTransactions = () => {
     }
     if (data) {
       setTransactions(data);
-      setTotal(
-        data.reduce((a, b) => {
-          if (b.type === 3) return a + b.amount;
-          return a - b.amount;
-        }, 0)
-      );
+      setTotal(calculateTotal(data));
     }
     setLoading(false);
   }, [supabase]);
 
   useEffect(() => {
-    fetchTransactions();
-  }, [fetchTransactions]);
+    // Initial fetch
+    fetchNotifications();
+
+    // Set up real-time subscription
+    const subscription: RealtimeChannel = supabase
+      .channel("notifications_changes")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "notifications",
+        },
+        payload => {
+          switch (payload.eventType) {
+            case "DELETE":
+              setTransactions(currentTransactions => {
+                const updatedTransactions: Transaction[] =
+                  currentTransactions.filter(
+                    transaction => transaction.id !== payload.old.id
+                  );
+                setTotal(calculateTotal(updatedTransactions));
+                return updatedTransactions;
+              });
+              break;
+
+            case "INSERT":
+              setTransactions(currentTransactions => {
+                const newTransaction: Transaction = payload.new as Transaction; // Assuming payload.new contains the new transaction
+                const updatedTransactions = [
+                  ...currentTransactions,
+                  newTransaction,
+                ];
+                setTotal(calculateTotal(updatedTransactions));
+                return updatedTransactions;
+              });
+              break;
+
+            case "UPDATE":
+              setTransactions(currentTransactions => {
+                const updatedTransaction: Transaction =
+                  payload.new as Transaction; // Assuming payload.new contains the updated transaction
+                const updatedTransactions = currentTransactions.map(
+                  transaction =>
+                    transaction.id === updatedTransaction.id
+                      ? updatedTransaction
+                      : transaction
+                );
+                setTotal(calculateTotal(updatedTransactions));
+                return updatedTransactions;
+              });
+              break;
+
+            default:
+              break;
+          }
+        }
+      )
+      .subscribe();
+
+    // Cleanup subscription
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [fetchNotifications, supabase]);
 
   return (
     <div>
@@ -62,31 +127,39 @@ const RecentTransactions = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {loading
-              ? Array.from({ length: 5 }).map((_, index) => (
-                  <TableRow key={index}>
-                    <TableCell>
-                      <Skeleton className='h-8' />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton className='h-8' />
-                    </TableCell>
-                  </TableRow>
-                ))
-              : transactions.map(transaction => (
-                  <TransactionDetails
-                    key={transaction.id}
-                    transaction={transaction}
-                  />
-                ))}
+            {loading ? (
+              Array.from({ length: 5 }).map((_, index) => (
+                <TableRow key={index}>
+                  <TableCell>
+                    <Skeleton className='h-8' />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className='h-8' />
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : transactions.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={2} className='text-center'>
+                  No recent transactions
+                </TableCell>
+              </TableRow>
+            ) : (
+              transactions.map(transaction => (
+                <TransactionDetails
+                  key={transaction.id}
+                  transaction={transaction}
+                />
+              ))
+            )}
           </TableBody>
           <TableFooter>
             <TableRow>
               <TableCell>Total</TableCell>
               <TableCell
-                className={`text-right text-${
-                  total >= 0 ? "green" : "red"
-                }-600`}
+                className={`text-right ${
+                  total >= 0 ? "text-green-500" : "text-red-500"
+                }`}
               >
                 {formatCurrency(total)}
               </TableCell>

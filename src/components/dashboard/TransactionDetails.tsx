@@ -24,7 +24,7 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@/components/ui/popover";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, ChevronsUpDown } from "lucide-react";
 import {
   Select,
   SelectTrigger,
@@ -33,8 +33,16 @@ import {
   SelectGroup,
   SelectItem,
 } from "@/components/ui/select";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { TimePicker } from "../ui/clock";
+import { useSupabase } from "../supabaseProvider";
 
 const TransactionDetails = ({ transaction }: { transaction: Transaction }) => {
+  const supabase = useSupabase();
   const [amount, setAmount] = useState(transaction.amount);
   const [description, setDescription] = useState("");
   const [location, setLocation] = useState(transaction.location);
@@ -42,10 +50,35 @@ const TransactionDetails = ({ transaction }: { transaction: Transaction }) => {
   const [transactionDate, setTransactionDate] = useState(
     new Date(transaction.transaction_date)
   );
+  const [calendarOpen, setCalendarOpen] = useState(false);
   const [open, setOpen] = useState(false);
 
+  const onSave = async () => {
+    const { error: errorWhileDeleting } = await supabase
+      .from("notifications")
+      .delete()
+      .eq("id", transaction.id);
+
+    const { data, error: errorWhileInserting } = await supabase
+      .from("history")
+      .insert({
+        amount,
+        description,
+        location,
+        type,
+        transaction_date: transactionDate,
+      });
+    console.log(data, errorWhileInserting);
+
+    if (errorWhileDeleting || errorWhileInserting) {
+      console.error("Error occured");
+      return;
+    }
+    setOpen(false);
+  };
+
   return (
-    <Dialog key={transaction.id}>
+    <Dialog key={transaction.id} open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <TableRow className='cursor-pointer'>
           <TableCell className='flex flex-col'>
@@ -70,7 +103,7 @@ const TransactionDetails = ({ transaction }: { transaction: Transaction }) => {
           </TableCell>
         </TableRow>
       </DialogTrigger>
-      <DialogContent className='sm:max-w-[425px]'>
+      <DialogContent className='rounded-lg '>
         <DialogHeader>
           <DialogTitle>Edit and save</DialogTitle>
           <DialogDescription>
@@ -79,103 +112,116 @@ const TransactionDetails = ({ transaction }: { transaction: Transaction }) => {
           </DialogDescription>
         </DialogHeader>
         <div className='grid gap-4 py-4'>
-          <div className='grid items-start gap-4'>
-            <Label htmlFor='description'>Description (optional)</Label>
-            <Input
-              id='description'
-              value={description}
-              onChange={e => setDescription(e.target.value)}
-              className='col-span-3'
-            />
-          </div>
-          <div className='grid items-start gap-4'>
-            <Label htmlFor='amount'>Amount</Label>
-            <Input
-              id='amount'
-              type='number'
-              value={amount}
-              onChange={e => setAmount(+e.target.value)}
-              className='col-span-3'
-              autoFocus={false}
-            />
-          </div>
+          <Collapsible>
+            <div className='grid items-start gap-y-2 mb-4'>
+              <Label htmlFor='description'>Description (optional)</Label>
+              <Input
+                id='description'
+                value={description}
+                onChange={e => setDescription(e.target.value)}
+                className='col-span-3'
+              />
+            </div>
 
-          <div className='grid items-start gap-4'>
-            <Label>Transaction Date</Label>
-            <Popover open={open} onOpenChange={setOpen}>
-              <PopoverTrigger asChild>
-                <div className='flex gap-2 w-full justify-between'>
-                  <Button
-                    variant={"outline"}
-                    className={cn(
-                      "w-1/2 justify-center text-left font-normal",
-                      !transactionDate && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon />
-                    {transactionDate ? (
-                      formatDate(transactionDate.toString())
-                    ) : (
-                      <span>Pick a date</span>
-                    )}
-                  </Button>
-                  <Button
-                    variant={"outline"}
-                    className={cn(
-                      "w-1/2 justify-center text-left font-normal",
-                      !transactionDate && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon />
-                    {transactionDate ? (
-                      formatDate(transactionDate.toString())
-                    ) : (
-                      <span>Pick a date</span>
-                    )}
-                  </Button>
-                </div>
-              </PopoverTrigger>
-              <PopoverContent className='w-auto p-0 bg-popover' align='start'>
-                <Calendar
-                  mode='single'
-                  selected={transactionDate}
-                  onSelect={newDate => {
-                    setTransactionDate(newDate as Date);
-                    setOpen(false); // Close the popover when a date is selected
-                  }}
-                  initialFocus
+            <CollapsibleContent>
+              <div className='grid items-start gap-y-2 mb-4'>
+                <Label htmlFor='amount'>Amount</Label>
+                <Input
+                  id='amount'
+                  type='number'
+                  value={amount}
+                  onChange={e => setAmount(+e.target.value)}
+                  className='col-span-3'
+                  autoFocus={false}
                 />
-              </PopoverContent>
-            </Popover>
-          </div>
-          <div className='grid items-start gap-4'>
-            <Label htmlFor='username'>Where</Label>
-            <Input
-              id='username'
-              value={location}
-              onChange={e => setLocation(e.target.value)}
-              className='col-span-3'
-            />
-          </div>
-          <div className='grid items-start gap-4'>
-            <Label htmlFor='type'>Transaction Type</Label>
-            <Select onValueChange={value => setType(+value)}>
-              <SelectTrigger className='w-[180px]' id='type'>
-                <SelectValue placeholder={transactionTypeParser(type)} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value='3'>Topup</SelectItem>
-                  <SelectItem value='2'>Transfer</SelectItem>
-                  <SelectItem value='1'>Withdrawal</SelectItem>
-                  <SelectItem value='0'>Expense</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
+              </div>
+              <div className='grid items-start gap-y-2 mb-4'>
+                <Label>Transaction Date</Label>
+                <div className='flex gap-2'>
+                  <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant={"outline"}
+                        className={cn(
+                          "w-1/2 justify-center text-left font-normal",
+                          !transactionDate && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon />
+                        {transactionDate ? (
+                          formatDate(transactionDate.toString(), false)
+                        ) : (
+                          <span>Pick a date</span>
+                        )}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      className='w-auto p-0 bg-popover'
+                      align='start'
+                    >
+                      <Calendar
+                        mode='single'
+                        selected={transactionDate}
+                        onSelect={newDate => {
+                          setTransactionDate(
+                            new Date(
+                              newDate!.getFullYear(),
+                              newDate!.getMonth(),
+                              newDate!.getDate(),
+                              transactionDate.getHours(),
+                              transactionDate.getMinutes(),
+                              transactionDate.getSeconds(),
+                              transactionDate.getMilliseconds()
+                            )
+                          );
+                          setCalendarOpen(false);
+                        }}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <TimePicker
+                    date={transactionDate}
+                    setDate={setTransactionDate}
+                  />
+                </div>
+              </div>
+              <div className='grid items-start gap-y-2 mb-4'>
+                <Label htmlFor='username'>Where</Label>
+                <Input
+                  id='username'
+                  value={location}
+                  onChange={e => setLocation(e.target.value)}
+                  className='col-span-3'
+                />
+              </div>
+              <div className='grid items-start gap-y-2'>
+                <Label htmlFor='type'>Transaction Type</Label>
+                <Select onValueChange={value => setType(+value)}>
+                  <SelectTrigger className='' id='type'>
+                    <SelectValue placeholder={transactionTypeParser(type)} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value='3'>Topup</SelectItem>
+                      <SelectItem value='2'>Transfer</SelectItem>
+                      <SelectItem value='1'>Withdrawal</SelectItem>
+                      <SelectItem value='0'>Expense</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+            </CollapsibleContent>
+            <CollapsibleTrigger asChild>
+              <Button variant='ghost' size='sm' className='w-full my-2'>
+                <span>Edit other details</span>
+                <ChevronsUpDown className='h-4 w-4' />
+              </Button>
+            </CollapsibleTrigger>
+          </Collapsible>
         </div>
         <DialogFooter>
-          <Button type='submit'>Save changes</Button>
+          <Button onClick={onSave}>Save changes</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
