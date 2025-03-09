@@ -157,7 +157,11 @@ const RecentTransactions = () => {
               <TableCell>Total</TableCell>
               <TableCell
                 className={`text-right ${
-                  total >= 0 ? "text-green-500" : "text-red-500"
+                  total > 0
+                    ? "text-green-500"
+                    : total == 0
+                      ? "text-card-foreground"
+                      : "text-red-500"
                 }`}
               >
                 {formatCurrency(total)}

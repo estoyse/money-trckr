@@ -53,23 +53,18 @@ const TransactionDetails = ({ transaction }: { transaction: Transaction }) => {
   const [open, setOpen] = useState(false);
 
   const onSave = async () => {
-    const { error: errorWhileDeleting } = await supabase
-      .from("notifications")
-      .delete()
-      .eq("id", transaction.id);
+    const { error } = await supabase.rpc("process_transaction", {
+      notification_id: transaction.id,
+      user_uuid: transaction.user_id,
+      p_amount: amount,
+      p_description: description,
+      p_location: location,
+      p_type: type,
+      p_transaction_date: transactionDate,
+      p_user_id: transaction.user_id,
+    });
 
-    const { data, error: errorWhileInserting } = await supabase
-      .from("history")
-      .insert({
-        amount,
-        description,
-        location,
-        type,
-        transaction_date: transactionDate,
-      });
-    console.log(data, errorWhileInserting);
-
-    if (errorWhileDeleting || errorWhileInserting) {
+    if (error) {
       console.error("Error occured");
       return;
     }

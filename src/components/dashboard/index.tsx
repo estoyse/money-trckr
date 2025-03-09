@@ -4,6 +4,7 @@ import Overview from "./overview";
 import RecentTransactions from "./recentTransactions";
 import { UserOverview } from "@/lib/types";
 import supabase from "@/utils/supabase";
+import { RealtimeChannel } from "@supabase/supabase-js";
 
 const Dashboard = () => {
   const [loading, setLoading] = useState<boolean>(true);
@@ -24,6 +25,7 @@ const Dashboard = () => {
       console.error("Error fetching data:", error);
       return;
     }
+    console.log(data);
     if (data) {
       setData(data[0] as UserOverview);
     } else {
@@ -36,7 +38,29 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
+    // Initial fetch
     fetchData();
+
+    // Set up real-time subscription
+    const subscription: RealtimeChannel = supabase
+      .channel("user_changes")
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "users",
+        },
+        (payload) => {
+          setData(payload.new as UserOverview);
+        },
+      )
+      .subscribe();
+
+    // Cleanup subscription
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [fetchData]);
 
   return (
