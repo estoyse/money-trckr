@@ -1,27 +1,15 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "./components/theme-provider";
-import Dashboard from "./components/dashboard";
-import { SupabaseProvider } from "./components/supabaseProvider";
+import { BrowserRouter as Router } from "react-router-dom";
+import RouterIndex from "./RouterIndex";
 
 function App() {
   return (
-    <SupabaseProvider>
-      <ThemeProvider defaultTheme='dark' storageKey='vite-ui-theme'>
-        <Router>
-          {/* <BottomBar /> */}
-
-          <Routes>
-            <Route path='/' element={<Dashboard />} />
-            <Route path='/about' element={<About />} />
-            {/* Add more routes as needed */}
-          </Routes>
-        </Router>
-      </ThemeProvider>
-    </SupabaseProvider>
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <Router>
+        <RouterIndex />
+      </Router>
+    </ThemeProvider>
   );
 }
-
-// Example components for routes
-const About = () => <div>About Page</div>;
 
 export default App;

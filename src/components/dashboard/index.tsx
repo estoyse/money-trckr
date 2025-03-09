@@ -1,12 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
-import { useSupabase } from "../supabaseProvider";
 import Accounts from "./accounts";
 import Overview from "./overview";
 import RecentTransactions from "./recentTransactions";
 import { UserOverview } from "@/lib/types";
+import supabase from "@/utils/supabase";
 
 const Dashboard = () => {
-  const supabase = useSupabase();
   const [loading, setLoading] = useState<boolean>(true);
   const [data, setData] = useState<UserOverview>({
     expenses: 0,
@@ -34,14 +33,14 @@ const Dashboard = () => {
     }
 
     setLoading(false);
-  }, [supabase]);
+  }, []);
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
 
   return (
-    <div className='p-2 lg:p-6 lg:pt-2 max-w-7xl mx-auto w-full'>
+    <div className="p-2 lg:p-6 lg:pt-2 max-w-7xl mx-auto w-full">
       <Overview data={data} loading={loading} />
       <Accounts data={data} loading={loading} />
       <RecentTransactions />
