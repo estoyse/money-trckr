@@ -1,7 +1,7 @@
 import { Building2, CirclePlus, CreditCard, Landmark } from "lucide-react";
-import { Card } from "../ui/card";
+import { Card } from "@/components/ui/card";
 import { UserOverview } from "@/lib/types";
-import { Skeleton } from "../ui/skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 import { formatCurrency } from "@/lib/formatCurrency";
 
 const Accounts = ({
@@ -25,24 +25,24 @@ const Accounts = ({
   };
   return (
     <div>
-      <h2 className='text-2xl font-semibold py-2'>Accounts</h2>
+      <h2 className="text-2xl font-semibold py-2">Accounts</h2>
 
       {loading ? (
-        <Card className='text-xl overflow-hidden'>
-          <Skeleton className='h-40 w-full' />
+        <Card className="text-xl overflow-hidden">
+          <Skeleton className="h-40 w-full" />
         </Card>
       ) : (
-        <Card className='divide-y divide-border grid grid-cols-1 lg:grid-cols-2 lg:divide-x text-xl overflow-hidden'>
-          {data.accounts.map(account => (
+        <Card className="divide-y divide-border grid grid-cols-1 lg:grid-cols-2 lg:divide-x text-xl overflow-hidden">
+          {data.accounts.map((account) => (
             <div
               key={account.id}
-              className='flex items-center justify-between p-4 cursor-pointer hover:bg-muted/50'
+              className="flex items-center justify-between p-4 cursor-pointer hover:bg-muted/50"
             >
-              <div className='flex items-center gap-3'>
+              <div className="flex items-center gap-3">
                 <Icon name={account.icon} />
                 <span>{account.name}</span>
               </div>
-              <div className='text-green-500'>
+              <div className="text-green-500">
                 {formatCurrency(account.balance)}
               </div>
             </div>
@@ -52,8 +52,8 @@ const Accounts = ({
               data.accounts.length % 2 === 0 ? "lg:col-span-2" : ""
             }`}
           >
-            <div className='flex items-center gap-3'>
-              <CirclePlus className='h-5 w-5 text-gray-400' />
+            <div className="flex items-center gap-3">
+              <CirclePlus className="h-5 w-5 text-gray-400" />
               <span>Add Card</span>
             </div>
           </div>

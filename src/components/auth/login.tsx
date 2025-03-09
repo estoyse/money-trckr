@@ -1,3 +1,6 @@
+import { useState } from "react";
+import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Session } from "@supabase/supabase-js";
 import { GalleryVerticalEnd } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,11 +12,9 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
-import supabase from "@/utils/supabase";
-import { useNavigate } from "react-router-dom";
+import supabase from "@/lib/supabase";
 
-export default function LoginPage() {
+export default function LoginPage({ session }: { session: Session | null }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -36,16 +37,18 @@ export default function LoginPage() {
       setError("Invalid email or password");
     }
   }
-
+  if (session) {
+    return <Navigate to="/" />;
+  }
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
       <div className="flex w-full max-w-sm flex-col gap-6">
-        <a href="#" className="flex items-center gap-2 self-center font-medium">
+        <div className="flex items-center gap-2 self-center font-medium">
           <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
             <GalleryVerticalEnd className="size-4" />
           </div>
           Money Trckr
-        </a>
+        </div>
 
         <div className="flex flex-col gap-6">
           <Card>
@@ -125,9 +128,12 @@ export default function LoginPage() {
                   </div>
                   <div className="text-center text-sm">
                     Don&apos;t have an account?{" "}
-                    <a href="#" className="underline underline-offset-4">
+                    <Link
+                      to="/sign-up"
+                      className="underline underline-offset-4"
+                    >
                       Sign up
-                    </a>
+                    </Link>
                   </div>
                 </div>
               </form>

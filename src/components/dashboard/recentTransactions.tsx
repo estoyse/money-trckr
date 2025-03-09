@@ -1,3 +1,8 @@
+import { useCallback, useEffect, useState } from "react";
+import { RealtimeChannel } from "@supabase/supabase-js";
+import supabase from "@/lib/supabase";
+import TransactionDetails from "./TransactionDetails";
+
 import {
   Table,
   TableBody,
@@ -8,14 +13,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { Card } from "../ui/card";
-import { useCallback, useEffect, useState } from "react";
-import type { Transaction } from "@/lib/types";
+import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { formatCurrency } from "@/lib/formatCurrency";
-import { Skeleton } from "../ui/skeleton";
-import { RealtimeChannel } from "@supabase/supabase-js";
-import TransactionDetails from "./TransactionDetails";
-import supabase from "@/utils/supabase";
+import type { Transaction } from "@/lib/types";
 
 const RecentTransactions = () => {
   const [loading, setLoading] = useState(true);

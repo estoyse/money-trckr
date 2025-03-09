@@ -1,31 +1,30 @@
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { Routes as RouterRoutes, Route, useNavigate } from "react-router-dom";
 import Dashboard from "./components/dashboard";
-import LoginPage from "./components/login";
+import LoginPage from "./components/auth/login";
 import { useEffect, useState } from "react";
-import supabase from "./utils/supabase";
+import supabase from "./lib/supabase";
 import { Session } from "@supabase/supabase-js";
 
-export default function RouterIndex() {
+export default function Routes() {
   const [loading, setLoading] = useState(true);
   const [session, setSession] = useState<Session | null>(null);
   const navigate = useNavigate();
 
+  const fetchSession = async () => {
+    const { data } = await supabase.auth.getSession();
+    setSession(data.session);
+  };
+
   useEffect(() => {
     setLoading(true);
-    const fetchSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      setSession(data.session);
-    };
-
     fetchSession();
 
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setSession(session);
+        setLoading(false);
       },
     );
-
-    setLoading(false);
 
     return () => {
       authListener.subscription.unsubscribe();
@@ -34,20 +33,20 @@ export default function RouterIndex() {
 
   // Separate effect for redirection
   useEffect(() => {
-    if (session === undefined) return; // Avoid running if session hasn't been checked yet
-    if (session === null) {
-      navigate("/login");
-    } else {
-      navigate("/");
+    const allowedRoutes = ["/sign-up", "/login"];
+    if (loading) return; // Avoid running if session hasn't been checked yet
+
+    if (!session && !allowedRoutes.includes(window.location.pathname)) {
+      navigate("/login", { replace: true });
     }
-  }, [session, navigate]);
+  }, [session, navigate, loading]);
 
   if (loading) return <div>Loading...</div>;
 
   return (
-    <Routes>
+    <RouterRoutes>
       <Route path="/" element={<Dashboard />} />
-      <Route path="/login" element={<LoginPage />} />
-    </Routes>
+      <Route path="/login" element={<LoginPage session={session} />} />
+    </RouterRoutes>
   );
 }

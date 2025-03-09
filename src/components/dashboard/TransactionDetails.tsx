@@ -1,4 +1,5 @@
 import { useState } from "react";
+import supabase from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -14,7 +15,6 @@ import { Input } from "@/components/ui/input";
 import { TableRow, TableCell } from "@/components/ui/table";
 import { Calendar } from "@/components/ui/calendar";
 
-import type { Transaction } from "@/lib/types";
 import { formatCurrency } from "@/lib/formatCurrency";
 import { transactionTypeParser } from "@/lib/transactionTypeParser";
 import { formatDate } from "@/lib/formatDate";
@@ -38,8 +38,8 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { TimePicker } from "../ui/clock";
-import supabase from "@/utils/supabase";
+import { TimePicker } from "@/components/ui/clock";
+import type { Transaction } from "@/lib/types";
 
 const TransactionDetails = ({ transaction }: { transaction: Transaction }) => {
   const [amount, setAmount] = useState(transaction.amount);

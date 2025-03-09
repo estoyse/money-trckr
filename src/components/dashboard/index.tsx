@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
+import { RealtimeChannel } from "@supabase/supabase-js";
 import Accounts from "./accounts";
 import Overview from "./overview";
 import RecentTransactions from "./recentTransactions";
 import { UserOverview } from "@/lib/types";
-import supabase from "@/utils/supabase";
-import { RealtimeChannel } from "@supabase/supabase-js";
+import supabase from "@/lib/supabase";
 
 const Dashboard = () => {
   const [loading, setLoading] = useState<boolean>(true);

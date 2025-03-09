@@ -5,8 +5,8 @@ import {
   ArrowRightLeftIcon,
   WalletIcon,
 } from "lucide-react";
-import InfoCard from "../ui/infoCard";
-import { ModeToggle } from "../mode-toggle";
+import InfoCard from "@/components/ui/infoCard";
+import { ModeToggle } from "@/components/common/mode-toggle";
 
 export default function Overview({
   data,
