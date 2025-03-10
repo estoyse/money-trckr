@@ -24,7 +24,7 @@ export default function ForgotPassword() {
     console.log("Sending reset email to:", email);
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: "http://localhost:5173/change-password",
+      redirectTo: "https://money-trckr.netlify.app/change-password",
     });
     if (error) {
       toast.error(error.message);
