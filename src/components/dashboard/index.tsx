@@ -25,7 +25,6 @@ const Dashboard = () => {
       console.error("Error fetching data:", error);
       return;
     }
-    console.log(data);
     if (data) {
       setData(data[0] as UserOverview);
     } else {

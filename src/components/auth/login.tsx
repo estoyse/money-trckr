@@ -1,12 +1,13 @@
 import { useState } from "react";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { Session } from "@supabase/supabase-js";
 import { GalleryVerticalEnd } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  // CardDescription,
+  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -14,27 +15,24 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import supabase from "@/lib/supabase";
 
-export default function LoginPage({ session }: { session: Session | null }) {
+export default function Login({ session }: { session: Session | null }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const navigate = useNavigate();
 
-  async function signInWithEmail(e: React.FormEvent<HTMLFormElement>) {
+  async function loginWithEmail(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    console.log(email, password);
+    // return;
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
+
     if (error) {
-      setError(error.message);
-    }
-    if (data) {
-      console.log(data);
-      navigate("/");
+      toast.error(error.message);
     }
     if (!error && !data) {
-      setError("Invalid email or password");
+      toast.error("Invalid email or password");
     }
   }
   if (session) {
@@ -54,15 +52,19 @@ export default function LoginPage({ session }: { session: Session | null }) {
           <Card>
             <CardHeader className="text-center">
               <CardTitle className="text-xl">Welcome back</CardTitle>
-              {/* <CardDescription>
+              <CardDescription>
                 Login with your Apple or Google account
-              </CardDescription> */}
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={signInWithEmail}>
+              <form onSubmit={loginWithEmail}>
                 <div className="grid gap-6">
-                  {/* <div className="flex flex-col gap-4">
-                    <Button variant="outline" className="w-full" type="button">
+                  <div className="flex flex-col gap-4">
+                    <Button
+                      variant="outline"
+                      className="w-full cursor-pointer"
+                      type="button"
+                    >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
@@ -74,7 +76,11 @@ export default function LoginPage({ session }: { session: Session | null }) {
                       </svg>
                       Login with Apple
                     </Button>
-                    <Button variant="outline" className="w-full" type="button">
+                    <Button
+                      variant="outline"
+                      className="w-full cursor-pointer"
+                      type="button"
+                    >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
@@ -91,7 +97,7 @@ export default function LoginPage({ session }: { session: Session | null }) {
                     <span className="relative z-10 bg-card px-2 text-muted-foreground">
                       Or continue with
                     </span>
-                    </div>*/}
+                  </div>
                   <div className="grid gap-6">
                     <div className="grid gap-2">
                       <Label htmlFor="email">Email</Label>
@@ -107,12 +113,12 @@ export default function LoginPage({ session }: { session: Session | null }) {
                     <div className="grid gap-2">
                       <div className="flex items-center">
                         <Label htmlFor="password">Password</Label>
-                        <a
-                          href="#"
+                        <Link
+                          to="/forgot"
                           className="ml-auto text-sm underline-offset-4 hover:underline"
                         >
                           Forgot your password?
-                        </a>
+                        </Link>
                       </div>
                       <Input
                         id="password"
@@ -122,7 +128,7 @@ export default function LoginPage({ session }: { session: Session | null }) {
                         required
                       />
                     </div>
-                    <Button type="submit" className="w-full">
+                    <Button type="submit" className="w-full cursor-pointer">
                       Login
                     </Button>
                   </div>

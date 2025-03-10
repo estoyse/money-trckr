@@ -1,9 +1,12 @@
 import { Routes as RouterRoutes, Route, useNavigate } from "react-router-dom";
 import Dashboard from "./components/dashboard";
-import LoginPage from "./components/auth/login";
+import Login from "./components/auth/login";
 import { useEffect, useState } from "react";
 import supabase from "./lib/supabase";
 import { Session } from "@supabase/supabase-js";
+import SignUp from "./components/auth/sign-up";
+import ForgotPassword from "./components/auth/forgot";
+import ChangePassword from "./components/auth/change-password";
 
 export default function Routes() {
   const [loading, setLoading] = useState(true);
@@ -33,7 +36,7 @@ export default function Routes() {
 
   // Separate effect for redirection
   useEffect(() => {
-    const allowedRoutes = ["/sign-up", "/login"];
+    const allowedRoutes = ["/sign-up", "/login", "/forgot"];
     if (loading) return; // Avoid running if session hasn't been checked yet
 
     if (!session && !allowedRoutes.includes(window.location.pathname)) {
@@ -46,7 +49,10 @@ export default function Routes() {
   return (
     <RouterRoutes>
       <Route path="/" element={<Dashboard />} />
-      <Route path="/login" element={<LoginPage session={session} />} />
+      <Route path="/login" element={<Login session={session} />} />
+      <Route path="/sign-up" element={<SignUp session={session} />} />
+      <Route path="/forgot" element={<ForgotPassword />} />
+      <Route path="/change-password" element={<ChangePassword />} />
     </RouterRoutes>
   );
 }

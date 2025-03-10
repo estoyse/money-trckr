@@ -1,6 +1,7 @@
 import { ThemeProvider } from "./components/common/theme-provider";
 import { BrowserRouter as Router } from "react-router-dom";
 import Routes from "./routes";
+import { Toaster } from "@/components/ui/sonner";
 
 function App() {
   return (
@@ -8,6 +9,7 @@ function App() {
       <Router>
         <Routes />
       </Router>
+      <Toaster richColors position="bottom-center" />
     </ThemeProvider>
   );
 }
