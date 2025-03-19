@@ -3,7 +3,6 @@ export interface UserOverview {
   income: number;
   totalBalance: number;
   totalTransactions: number;
-  accounts: Account[];
 }
 
 export interface Account {
@@ -12,6 +11,7 @@ export interface Account {
   balance: number;
   icon: string;
 }
+
 export type Transaction = {
   amount: number;
   created_at: string;

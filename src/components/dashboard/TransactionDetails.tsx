@@ -40,6 +40,7 @@ import {
 } from "@/components/ui/collapsible";
 import { TimePicker } from "@/components/ui/clock";
 import type { Transaction } from "@/lib/types";
+import Spinner from "../ui/spinner";
 
 const TransactionDetails = ({ transaction }: { transaction: Transaction }) => {
   const [amount, setAmount] = useState(transaction.amount);
@@ -51,8 +52,10 @@ const TransactionDetails = ({ transaction }: { transaction: Transaction }) => {
   );
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const onSave = async () => {
+    setLoading(true);
     const { error } = await supabase.rpc("process_transaction", {
       notification_id: transaction.id,
       user_uuid: transaction.user_id,
@@ -69,6 +72,7 @@ const TransactionDetails = ({ transaction }: { transaction: Transaction }) => {
       return;
     }
     setOpen(false);
+    setLoading(false);
   };
 
   return (
@@ -215,7 +219,10 @@ const TransactionDetails = ({ transaction }: { transaction: Transaction }) => {
           </Collapsible>
         </div>
         <DialogFooter>
-          <Button onClick={onSave}>Save changes</Button>
+          <Button onClick={onSave} disabled={loading}>
+            {loading && <Spinner />}
+            Save changes
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

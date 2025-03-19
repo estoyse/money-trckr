@@ -13,13 +13,12 @@ const Dashboard = () => {
     income: 0,
     totalBalance: 0,
     totalTransactions: 0,
-    accounts: [],
   });
   const fetchData = useCallback(async () => {
     setLoading(true);
     const { data, error } = await supabase
       .from("users")
-      .select("expenses, income, totalBalance, totalTransactions, accounts");
+      .select("expenses, income, totalBalance, totalTransactions");
 
     if (error) {
       console.error("Error fetching data:", error);
@@ -65,7 +64,7 @@ const Dashboard = () => {
   return (
     <div className="p-2 lg:p-6 lg:pt-2 max-w-7xl mx-auto w-full">
       <Overview data={data} loading={loading} />
-      <Accounts data={data} loading={loading} />
+      <Accounts />
       <RecentTransactions />
       {/* <ExpenseList /> */}
     </div>
