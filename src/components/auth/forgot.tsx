@@ -13,27 +13,28 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
 import supabase from "@/lib/supabase";
 import { toast } from "sonner";
+import Spinner from "../ui/spinner";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const sendResetEmail = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Implement forgot password logic here
-    console.log("Sending reset email to:", email);
+    setLoading(true);
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: "https://money-trckr.netlify.app/change-password",
     });
     if (error) {
       toast.error(error.message);
+      setLoading(false);
     }
     if (!error) {
       toast.info("Email sent successfully");
-      setTimeout(() => {
-        navigate("/login");
-      }, 2000);
+      setLoading(false);
+      navigate("/login");
     }
   };
 
@@ -70,7 +71,12 @@ export default function ForgotPassword() {
                       required
                     />
                   </div>
-                  <Button type="submit" className="w-full cursor-pointer">
+                  <Button
+                    type="submit"
+                    className="w-full cursor-pointer"
+                    disabled={loading}
+                  >
+                    {loading && <Spinner size={1} />}
                     Send
                   </Button>
 

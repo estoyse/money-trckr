@@ -14,14 +14,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import supabase from "@/lib/supabase";
 import { toast } from "sonner";
+import Spinner from "../ui/spinner";
 
 export default function SignUp({ session }: { session: Session | null }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   async function signUpWithEmail(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    setLoading(true);
 
     if (password !== confirmPassword) {
       toast.error("Passwords do not match");
@@ -50,6 +53,7 @@ export default function SignUp({ session }: { session: Session | null }) {
     if (insertError) {
       console.error(insertError);
     }
+    setLoading(false);
   }
 
   if (session) {
@@ -152,7 +156,12 @@ export default function SignUp({ session }: { session: Session | null }) {
                         required
                       />
                     </div>
-                    <Button type="submit" className="w-full cursor-pointer">
+                    <Button
+                      type="submit"
+                      className="w-full cursor-pointer"
+                      disabled={loading}
+                    >
+                      {loading && <Spinner />}
                       Sign Up
                     </Button>
                   </div>

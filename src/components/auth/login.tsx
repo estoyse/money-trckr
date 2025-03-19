@@ -14,15 +14,16 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import supabase from "@/lib/supabase";
+import Spinner from "../ui/spinner";
 
 export default function Login({ session }: { session: Session | null }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   async function loginWithEmail(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    console.log(email, password);
-    // return;
+    setLoading(true);
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -34,8 +35,10 @@ export default function Login({ session }: { session: Session | null }) {
     if (!error && !data) {
       toast.error("Invalid email or password");
     }
+    setLoading(false);
   }
   if (session) {
+    console.log("called on login");
     return <Navigate to="/" />;
   }
   return (
@@ -128,7 +131,12 @@ export default function Login({ session }: { session: Session | null }) {
                         required
                       />
                     </div>
-                    <Button type="submit" className="w-full cursor-pointer">
+                    <Button
+                      type="submit"
+                      className="w-full cursor-pointer"
+                      disabled={loading}
+                    >
+                      {loading && <Spinner />}
                       Login
                     </Button>
                   </div>
