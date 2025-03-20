@@ -5,6 +5,7 @@ import Overview from "./overview";
 import RecentTransactions from "./recentTransactions";
 import { UserOverview } from "@/lib/types";
 import supabase from "@/lib/supabase";
+import CreateRecord from "./createRecord";
 
 const Dashboard = () => {
   const [loading, setLoading] = useState<boolean>(true);
@@ -65,6 +66,7 @@ const Dashboard = () => {
     <div className="p-2 lg:p-6 lg:pt-2 max-w-7xl mx-auto w-full">
       <Overview data={data} loading={loading} />
       <Accounts />
+      <CreateRecord />
       <RecentTransactions />
       {/* <ExpenseList /> */}
     </div>
