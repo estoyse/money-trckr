@@ -99,9 +99,9 @@ export default function CreateRecord() {
       <Card className="divide-y divide-border grid grid-cols-1 lg:grid-cols-2 lg:divide-x text-xl overflow-hidden">
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>
-            <div className="flex items-center justify-center p-4 cursor-pointer hover:bg-muted/50 lg:col-span-2">
+            <div className="flex items-center justify-center p-4 cursor-pointer hover:bg-primary/90 lg:col-span-2 bg-primary transition-colors">
               <button className="flex items-center gap-3 cursor-pointer">
-                <CirclePlus className="h-5 w-5 text-gray-400" />
+                <CirclePlus className="h-5 w-5" />
                 <span>Create Record</span>
               </button>
             </div>
@@ -122,6 +122,7 @@ export default function CreateRecord() {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   className="col-span-3"
+                  autoComplete="off"
                 />
               </div>
               <div className="grid items-start gap-y-2 mb-4">
@@ -135,7 +136,7 @@ export default function CreateRecord() {
                   }
                   className="col-span-3"
                   autoFocus={false}
-                  required
+                  autoComplete="off"
                 />
               </div>
               <div className="grid items-start gap-y-2 mb-4">
