@@ -4,6 +4,15 @@
 
 @custom-variant dark (&:is(.dark *));
 
+input[type="number"] {
+    appearance: textfield; /* Hides default number input styling */
+}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    appearance: none;
+    margin: 0;
+}
+
 @theme {
     --radius-lg: var(--radius);
     --radius-md: calc(var(--radius) - 2px);
