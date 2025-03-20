@@ -43,7 +43,9 @@ const Accounts = () => {
   useEffect(() => {
     const fetchAccounts = async () => {
       setLoading(true);
-      const { data } = await supabase.from("user_accounts").select("*");
+      const { data } = await supabase
+        .from("user_accounts")
+        .select("id, name, balance, icon");
       setAccounts(data || []);
       setLoading(false);
     };
