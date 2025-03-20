@@ -53,14 +53,12 @@ const Accounts = () => {
   }, []);
 
   const handleSave = async () => {
-    const { data } = await supabase.auth.getUser();
     setIsSaving(true);
 
     try {
       const { error } = await supabase.from("user_accounts").insert({
         name: cardName,
         balance: initialBalance,
-        user_id: data?.user?.id,
         icon: "CreditCard",
       });
       if (error) {
