@@ -7,6 +7,7 @@ import { Session } from "@supabase/supabase-js";
 import SignUp from "./components/auth/sign-up";
 import ForgotPassword from "./components/auth/forgot";
 import ChangePassword from "./components/auth/change-password";
+import Spinner from "./components/ui/spinner";
 
 export default function Routes() {
   const [loading, setLoading] = useState(true);
@@ -44,7 +45,12 @@ export default function Routes() {
     }
   }, [session, navigate, loading]);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading)
+    return (
+      <div className="fixed top-0 bottom-0 right-0 left-0 flex items-center justify-center">
+        <Spinner size={3} />
+      </div>
+    );
 
   return (
     <RouterRoutes>

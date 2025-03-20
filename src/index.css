@@ -142,18 +142,22 @@ button:disabled {
 }
 .spinner {
     width: 24px;
-    aspect-ratio: 1;
+    height: 24px;
     display: grid;
     border-radius: 50%;
-    -webkit-mask: radial-gradient(
-        farthest-side,
-        #0000 40%,
-        rgba(0, 0, 0, 0.6) 41%
-    );
+    -webkit-mask: radial-gradient(farthest-side, #0000 40%, #ededed 41%);
     background:
-        linear-gradient(0deg, rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 1) 0)
+        linear-gradient(
+                0deg,
+                rgba(237, 237, 237, 0.5) 50%,
+                rgba(237, 237, 237, 1) 0
+            )
             center/1.9px 100%,
-        linear-gradient(90deg, rgba(0, 0, 0, 0.25) 50%, rgba(0, 0, 0, 0.75) 0)
+        linear-gradient(
+                90deg,
+                rgba(237, 237, 237, 0.25) 50%,
+                rgba(237, 237, 237, 0.75) 0
+            )
             center/100% 1.9px;
     background-repeat: no-repeat;
     animation: spinner-d3o0rx 1s infinite steps(12);
