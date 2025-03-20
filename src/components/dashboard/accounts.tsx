@@ -86,9 +86,6 @@ const Accounts = () => {
           <Skeleton className="divide-y divide-border grid grid-cols-1 lg:grid-cols-2 lg:divide-x text-xl overflow-hidden h-16" />
           <Skeleton className="divide-y divide-border grid grid-cols-1 lg:grid-cols-2 lg:divide-x text-xl overflow-hidden h-16" />
           <Skeleton className="divide-y divide-border grid grid-cols-1 lg:grid-cols-2 lg:divide-x text-xl overflow-hidden h-16" />
-          {/* <Skeleton className="h-20 w-full" />
-          <Skeleton className="h-20 w-full" />
-          <Skeleton className="h-20 w-full" /> */}
         </Card>
       ) : (
         <Card className="divide-y divide-border grid grid-cols-1 lg:grid-cols-2 lg:divide-x text-xl overflow-hidden">
@@ -145,7 +142,7 @@ const Accounts = () => {
                   <Input
                     id="amount"
                     type="number"
-                    className="col-span-3 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                    className="col-span-3"
                     value={initialBalance}
                     onChange={(e) =>
                       setInitialBalance(
