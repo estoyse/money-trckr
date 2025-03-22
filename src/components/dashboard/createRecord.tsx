@@ -64,8 +64,8 @@ export default function CreateRecord() {
   async function handleAddCard() {
     setIsSaving(true);
     try {
-      if (!selectedAccountId) throw new Error("Please select an account");
       if (!amount) throw new Error("Please enter an amount");
+      if (!selectedAccountId) throw new Error("Please select an account");
       const { error } = await supabase.from("history").insert({
         account: selectedAccountId,
         amount: +amount,
@@ -217,7 +217,7 @@ export default function CreateRecord() {
                     </Select>
                   </div>
                   <div className="w-1/2">
-                    <Label htmlFor="type">Account</Label>
+                    <Label htmlFor="account">Account</Label>
                     <Select
                       onValueChange={(value) => setSelectedAccountId(value)}
                     >
