@@ -20,4 +20,8 @@ export type Transaction = {
   transaction_date: string;
   type: number;
   user_id: string;
+  description: string;
+  account_id: string;
+  categories: string;
+  icon: string;
 };

@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { RealtimeChannel } from "@supabase/supabase-js";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Accounts from "./accounts";
 import Overview from "./overview";
 import RecentTransactions from "./recentTransactions";
 import { UserOverview } from "@/lib/types";
 import supabase from "@/lib/supabase";
 import CreateRecord from "./createRecord";
+import History from "./history";
 
 const Dashboard = () => {
   const [loading, setLoading] = useState<boolean>(true);
@@ -50,9 +52,9 @@ const Dashboard = () => {
           schema: "public",
           table: "users",
         },
-        (payload) => {
+        payload => {
           setData(payload.new as UserOverview);
-        },
+        }
       )
       .subscribe();
 
@@ -63,12 +65,22 @@ const Dashboard = () => {
   }, [fetchData]);
 
   return (
-    <div className="p-2 lg:p-6 lg:pt-2 max-w-7xl mx-auto w-full">
+    <div className='p-2 lg:p-6 lg:pt-2 max-w-7xl mx-auto w-full'>
       <Overview data={data} loading={loading} />
       <Accounts />
       <CreateRecord />
-      <RecentTransactions />
-      {/* <ExpenseList /> */}
+      <Tabs defaultValue='history' className='w-full mt-4'>
+        <TabsList className='w-full'>
+          <TabsTrigger value='history'>History</TabsTrigger>
+          <TabsTrigger value='recent'>Recent</TabsTrigger>
+        </TabsList>
+        <TabsContent value='history'>
+          <History />
+        </TabsContent>
+        <TabsContent value='recent'>
+          <RecentTransactions />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
