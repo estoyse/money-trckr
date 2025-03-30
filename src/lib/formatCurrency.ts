@@ -4,5 +4,4 @@ export const formatCurrency = (amount: number) => {
     currency: "UZS",
     minimumFractionDigits: 0,
     maximumFractionDigits: 3,
-  }).format(amount);
-};
+  }).format(amount); };

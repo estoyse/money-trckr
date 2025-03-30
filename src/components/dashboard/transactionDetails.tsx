@@ -39,14 +39,22 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { TimePicker } from "@/components/ui/clock";
-import type { Transaction } from "@/lib/types";
+import type { Account, Transaction } from "@/lib/types";
 import Spinner from "../ui/spinner";
+import { toast } from "sonner";
+import { accountsAtom, notificationsAtom } from "@/state/atoms";
+import { useAtom } from "jotai";
 
 const TransactionDetails = ({ transaction }: { transaction: Transaction }) => {
+  const [accounts] = useAtom(accountsAtom);
+  const [, setTransactions] = useAtom(notificationsAtom);
+
   const [amount, setAmount] = useState(transaction.amount);
   const [description, setDescription] = useState("");
   const [location, setLocation] = useState(transaction.location);
   const [type, setType] = useState(transaction.type);
+  const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
+
   const [transactionDate, setTransactionDate] = useState(
     new Date(transaction.transaction_date)
   );
@@ -56,6 +64,11 @@ const TransactionDetails = ({ transaction }: { transaction: Transaction }) => {
 
   const onSave = async () => {
     setLoading(true);
+    if (!selectedAccount) {
+      toast.error("Please select an account");
+      setLoading(false);
+      return;
+    }
     const { error } = await supabase.rpc("process_transaction", {
       notification_id: transaction.id,
       user_uuid: transaction.user_id,
@@ -64,17 +77,24 @@ const TransactionDetails = ({ transaction }: { transaction: Transaction }) => {
       p_location: location,
       p_type: type,
       p_transaction_date: transactionDate,
-      p_user_id: transaction.user_id,
+      account_id: selectedAccount?.id,
     });
 
     if (error) {
-      console.error("Error occured");
+      toast.error(error.message);
+      setLoading(false);
       return;
     }
+    setTransactions(currentTransactions => {
+      const updatedTransactions: Transaction[] = currentTransactions.filter(
+        currentTransaction => currentTransaction.id !== transaction.id
+      );
+      return updatedTransactions;
+    });
+
     setOpen(false);
     setLoading(false);
   };
-
   return (
     <Dialog key={transaction.id} open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -120,7 +140,58 @@ const TransactionDetails = ({ transaction }: { transaction: Transaction }) => {
                 className='col-span-3'
               />
             </div>
-
+            <div className='grid items-start gap-y-2'>
+              <div className='flex gap-2'>
+                <div className='w-1/2'>
+                  <Label htmlFor='type'>Transaction Type</Label>
+                  <Select onValueChange={value => setType(+value)}>
+                    <SelectTrigger className='' id='type'>
+                      <SelectValue placeholder={transactionTypeParser(type)} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectItem value='3'>Topup</SelectItem>
+                        <SelectItem value='2'>Transfer</SelectItem>
+                        <SelectItem value='1'>Withdrawal</SelectItem>
+                        <SelectItem value='0'>Expense</SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className='w-1/2'>
+                  <Label htmlFor='account'>Account</Label>
+                  <Select
+                    onValueChange={value => {
+                      const accountById = accounts.find(
+                        account => account.id === value
+                      );
+                      if (accountById) {
+                        setSelectedAccount(accountById);
+                      }
+                    }}
+                  >
+                    <SelectTrigger className='' id='account'>
+                      <SelectValue placeholder={selectedAccount?.name} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {accounts.map(account => (
+                          <SelectItem key={account.id} value={account.id}>
+                            {account.name}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+            <CollapsibleTrigger asChild>
+              <Button variant='ghost' size='sm' className='w-full my-2'>
+                <span>Edit other details</span>
+                <ChevronsUpDown className='h-4 w-4' />
+              </Button>
+            </CollapsibleTrigger>
             <CollapsibleContent>
               <div className='grid items-start gap-y-2 mb-4'>
                 <Label htmlFor='amount'>Amount</Label>
@@ -193,29 +264,7 @@ const TransactionDetails = ({ transaction }: { transaction: Transaction }) => {
                   className='col-span-3'
                 />
               </div>
-              <div className='grid items-start gap-y-2'>
-                <Label htmlFor='type'>Transaction Type</Label>
-                <Select onValueChange={value => setType(+value)}>
-                  <SelectTrigger className='' id='type'>
-                    <SelectValue placeholder={transactionTypeParser(type)} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value='3'>Topup</SelectItem>
-                      <SelectItem value='2'>Transfer</SelectItem>
-                      <SelectItem value='1'>Withdrawal</SelectItem>
-                      <SelectItem value='0'>Expense</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
             </CollapsibleContent>
-            <CollapsibleTrigger asChild>
-              <Button variant='ghost' size='sm' className='w-full my-2'>
-                <span>Edit other details</span>
-                <ChevronsUpDown className='h-4 w-4' />
-              </Button>
-            </CollapsibleTrigger>
           </Collapsible>
         </div>
         <DialogFooter>
