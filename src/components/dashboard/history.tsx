@@ -11,7 +11,7 @@ export default function History() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
 
   useEffect(() => {
-    const fetchNotifications = async () => {
+    const fetchHistory = async () => {
       setLoading(true);
       const { data, error } = await supabase
         .from("history")
@@ -28,7 +28,7 @@ export default function History() {
       setLoading(false);
     };
     // Initial fetch
-    fetchNotifications();
+    fetchHistory();
   }, []);
 
   return (

@@ -1,7 +1,3 @@
-import { useCallback, useEffect, useState } from "react";
-import { RealtimeChannel } from "@supabase/supabase-js";
-import supabase from "@/lib/supabase";
-import { UserOverview } from "@/lib/types";
 import {
   ArrowDownIcon,
   ArrowUpIcon,
@@ -10,65 +6,17 @@ import {
 } from "lucide-react";
 import InfoCard from "@/components/ui/infoCard";
 import { ModeToggle } from "@/components/common/mode-toggle";
+import { useAtom, useAtomValue } from "jotai";
+import {
+  accountsAtom,
+  userOverviewAtom,
+  userOverviewLoadingAtom,
+} from "@/state/atoms";
 
 export default function Overview() {
-  const [loading, setLoading] = useState<boolean>(true);
-  const [data, setData] = useState<UserOverview>({
-    expenses: 0,
-    income: 0,
-    totalBalance: 0,
-    totalTransactions: 0,
-  });
-  const fetchData = useCallback(async () => {
-    setLoading(true);
-    const { data, error } = await supabase
-      .from("users")
-      .select("expenses, income, total_balance, total_transactions");
-
-    if (error) {
-      console.error("Error fetching data:", error);
-      return;
-    }
-    if (data) {
-      setData({
-        ...data[0],
-        totalTransactions: data[0].total_transactions,
-        totalBalance: data[0].total_balance,
-      });
-    } else {
-      // Handle the case when no data is found
-      console.log("No user data found");
-      // Keep the default values set in useState
-    }
-
-    setLoading(false);
-  }, []);
-
-  useEffect(() => {
-    // Initial fetch
-    fetchData();
-
-    // Set up real-time subscription
-    const subscription: RealtimeChannel = supabase
-      .channel("user_changes")
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "users",
-        },
-        payload => {
-          setData(payload.new as UserOverview);
-        }
-      )
-      .subscribe();
-
-    // Cleanup subscription
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [fetchData]);
+  const [accounts] = useAtom(accountsAtom);
+  const [userOverview] = useAtom(userOverviewAtom);
+  const loading = useAtomValue(userOverviewLoadingAtom);
 
   return (
     <div>
@@ -81,28 +29,28 @@ export default function Overview() {
         <InfoCard
           title='Expenses'
           icon={ArrowDownIcon}
-          value={-data.expenses}
+          value={-userOverview.expenses}
           loading={loading}
           color='red'
         />
         <InfoCard
           title='Income'
           icon={ArrowUpIcon}
-          value={data.income}
+          value={userOverview.income}
           loading={loading}
           color='green'
         />
         <InfoCard
           title='Total Balance'
           icon={WalletIcon}
-          value={data.totalBalance}
+          value={accounts.reduce((acc, account) => acc + account.balance, 0)}
           loading={loading}
           color='blue'
         />
         <InfoCard
           title='Total Transactions'
           icon={ArrowRightLeftIcon}
-          value={data.totalTransactions}
+          value={userOverview.totalTransactions}
           loading={loading}
           color='gray'
         />

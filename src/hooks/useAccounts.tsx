@@ -1,5 +1,4 @@
 import supabase from "@/lib/supabase";
-import { Account } from "@/lib/types";
 import { useEffect } from "react";
 import { useAtom } from "jotai";
 import {
@@ -31,47 +30,6 @@ const useAccounts = () => {
 
     // Initial fetch
     fetchAccounts();
-
-    // Setup real-time subscription for updates only
-    const subscription = supabase
-      .channel("user_accounts_changes")
-      .on(
-        "postgres_changes",
-        {
-          event: "*", // Listen to all events (INSERT, UPDATE, DELETE)
-          schema: "public",
-          table: "user_accounts",
-        },
-        payload => {
-          // Handle different event types
-          switch (payload.eventType) {
-            case "INSERT":
-              setAccounts(current => [...current, payload.new as Account]);
-              break;
-            case "UPDATE":
-              console.log(payload.new);
-              setAccounts(current =>
-                current.map(account =>
-                  account.id === payload.new.id
-                    ? (payload.new as Account)
-                    : account
-                )
-              );
-              break;
-            case "DELETE":
-              setAccounts(current =>
-                current.filter(account => account.id !== payload.old.id)
-              );
-              break;
-          }
-        }
-      )
-      .subscribe();
-
-    // Cleanup subscription when component unmounts
-    return () => {
-      subscription.unsubscribe();
-    };
   }, [setAccounts, setError, setLoading]);
 
   return { accounts, loading, error };

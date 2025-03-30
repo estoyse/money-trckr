@@ -34,7 +34,8 @@ import { useAtom } from "jotai";
 import { accountsAtom } from "@/state/atoms";
 
 export default function CreateRecord() {
-  const [accounts] = useAtom(accountsAtom);
+  const [accounts, setAccounts] = useAtom(accountsAtom);
+
   const [isOpen, setIsOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [amount, setAmount] = useState<number | "">("");
@@ -72,7 +73,20 @@ export default function CreateRecord() {
       setLocation("");
       setIsOpen(false);
       setSelectedAccountId("");
-    } catch (error: unknown) {
+      setAccounts(prev =>
+        prev.map(account =>
+          account.id === selectedAccountId
+            ? {
+                ...account,
+                balance:
+                  type === 3
+                    ? account.balance + +amount
+                    : account.balance - +amount,
+              }
+            : account
+        )
+      );
+    } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);
       } else {

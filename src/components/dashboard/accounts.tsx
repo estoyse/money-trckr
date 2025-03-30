@@ -16,10 +16,10 @@ import { useState } from "react";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import supabase from "@/lib/supabase";
-import { toast } from "sonner";
 import { Skeleton } from "../ui/skeleton";
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { accountsAtom, accountsLoadingAtom } from "@/state/atoms";
+import { toast } from "sonner";
 
 const Accounts = () => {
   const Icon = ({ name }: { name: string }) => {
@@ -34,8 +34,8 @@ const Accounts = () => {
         return null;
     }
   };
-  const [accounts] = useAtom(accountsAtom);
-  const [loading] = useAtom(accountsLoadingAtom);
+  const [accounts, setAccounts] = useAtom(accountsAtom);
+  const loading = useAtomValue(accountsLoadingAtom);
 
   const [open, setOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -46,20 +46,30 @@ const Accounts = () => {
     setIsSaving(true);
 
     try {
-      const { error } = await supabase.from("user_accounts").insert({
-        name: cardName,
-        balance: +initialBalance,
-        icon: "CreditCard",
-      });
+      const { data: addedCard, error } = await supabase
+        .from("user_accounts")
+        .insert({
+          name: cardName,
+          balance: +initialBalance,
+          icon: "CreditCard",
+        })
+        .select()
+        .single();
+
       if (error) {
-        toast.error(error.message);
+        throw error;
       }
+      setAccounts(prev => [...prev, addedCard]);
 
       setOpen(false);
       setCardName("");
       setInitialBalance(0);
     } catch (error) {
-      console.error(error);
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("An unknown error occurred");
+      }
     } finally {
       setIsSaving(false);
     }

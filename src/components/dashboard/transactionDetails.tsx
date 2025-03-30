@@ -39,21 +39,21 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { TimePicker } from "@/components/ui/clock";
-import type { Account, Transaction } from "@/lib/types";
+import type { Transaction } from "@/lib/types";
 import Spinner from "../ui/spinner";
 import { toast } from "sonner";
 import { accountsAtom, notificationsAtom } from "@/state/atoms";
-import { useAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 
 const TransactionDetails = ({ transaction }: { transaction: Transaction }) => {
-  const [accounts] = useAtom(accountsAtom);
-  const [, setTransactions] = useAtom(notificationsAtom);
+  const [accounts, setAccounts] = useAtom(accountsAtom);
+  const setTransactions = useSetAtom(notificationsAtom);
 
   const [amount, setAmount] = useState(transaction.amount);
   const [description, setDescription] = useState("");
   const [location, setLocation] = useState(transaction.location);
   const [type, setType] = useState(transaction.type);
-  const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
+  const [selectedAccountId, setSelectedAccountId] = useState("");
 
   const [transactionDate, setTransactionDate] = useState(
     new Date(transaction.transaction_date)
@@ -64,7 +64,7 @@ const TransactionDetails = ({ transaction }: { transaction: Transaction }) => {
 
   const onSave = async () => {
     setLoading(true);
-    if (!selectedAccount) {
+    if (!selectedAccountId) {
       toast.error("Please select an account");
       setLoading(false);
       return;
@@ -77,7 +77,7 @@ const TransactionDetails = ({ transaction }: { transaction: Transaction }) => {
       p_location: location,
       p_type: type,
       p_transaction_date: transactionDate,
-      account_id: selectedAccount?.id,
+      account_id: selectedAccountId,
     });
 
     if (error) {
@@ -91,6 +91,19 @@ const TransactionDetails = ({ transaction }: { transaction: Transaction }) => {
       );
       return updatedTransactions;
     });
+    setAccounts(prev =>
+      prev.map(account =>
+        account.id === selectedAccountId
+          ? {
+              ...account,
+              balance:
+                type === 3
+                  ? account.balance + amount
+                  : account.balance - amount,
+            }
+          : account
+      )
+    );
 
     setOpen(false);
     setLoading(false);
@@ -162,16 +175,11 @@ const TransactionDetails = ({ transaction }: { transaction: Transaction }) => {
                   <Label htmlFor='account'>Account</Label>
                   <Select
                     onValueChange={value => {
-                      const accountById = accounts.find(
-                        account => account.id === value
-                      );
-                      if (accountById) {
-                        setSelectedAccount(accountById);
-                      }
+                      setSelectedAccountId(value);
                     }}
                   >
                     <SelectTrigger className='' id='account'>
-                      <SelectValue placeholder={selectedAccount?.name} />
+                      <SelectValue placeholder='Select an account' />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
