@@ -1,9 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { formatCurrency } from "@/lib/formatCurrency";
 import { formatDate } from "@/lib/formatDate";
-import supabase from "@/lib/supabase";
-import { Transaction } from "@/lib/types";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Skeleton } from "../ui/skeleton";
 import {
   Table,
@@ -12,36 +10,71 @@ import {
   TableHeader,
   TableRow,
   TableHead,
+  TableFooter,
 } from "../ui/table";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { transactionTypeParser } from "@/lib/transactionTypeParser";
 import { useAtomValue } from "jotai";
-import { accountsAtom } from "@/state/atoms";
+import { accountsAtom, historyAtom, historyLoadingAtom } from "@/state/atoms";
+import { useNavigate } from "react-router-dom";
 
 export default function History() {
-  const [loading, setLoading] = useState(false);
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const navigate = useNavigate();
+
+  const transactions = useAtomValue(historyAtom);
   const accounts = useAtomValue(accountsAtom);
+  const loading = useAtomValue(historyLoadingAtom);
 
-  useEffect(() => {
-    const fetchHistory = async () => {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from("history")
-        .select("*")
-        .order("transaction_date", { ascending: false });
+  const [currentPage, setCurrentPage] = useState(1);
 
-      if (error) {
-        console.error("Error fetching data:", error);
-        return;
+  const totalPages = Math.ceil(transactions.length / 10);
+
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxPagesToShow = 5;
+
+    if (totalPages <= maxPagesToShow) {
+      // Show all pages if there are few
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
       }
-      if (data) {
-        setTransactions(data);
+    } else {
+      // Always show first page
+      pages.push(1);
+
+      // Calculate middle pages
+      const leftBound = Math.max(2, currentPage - 1);
+      const rightBound = Math.min(totalPages - 1, currentPage + 1);
+
+      // Add ellipsis after first page if needed
+      if (leftBound > 2) {
+        pages.push(-1); // -1 represents ellipsis
       }
-      setLoading(false);
-    };
-    // Initial fetch
-    fetchHistory();
-  }, []);
+
+      // Add middle pages
+      for (let i = leftBound; i <= rightBound; i++) {
+        pages.push(i);
+      }
+
+      // Add ellipsis before last page if needed
+      if (rightBound < totalPages - 1) {
+        pages.push(-2); // -2 represents ellipsis
+      }
+
+      // Always show last page
+      pages.push(totalPages);
+    }
+
+    return pages;
+  };
 
   return (
     <div>
@@ -58,8 +91,11 @@ export default function History() {
             {loading ? (
               Array.from({ length: 5 }).map((_, index) => (
                 <TableRow key={index}>
+                  <TableCell className='w-8'>
+                    <Skeleton className='h-8 w-8 rounded-full' />
+                  </TableCell>
                   <TableCell>
-                    <Skeleton className='h-8' />
+                    <Skeleton className='h-8 w-full' />
                   </TableCell>
                   <TableCell>
                     <Skeleton className='h-8' />
@@ -74,7 +110,11 @@ export default function History() {
               </TableRow>
             ) : (
               transactions.map(transaction => (
-                <TableRow key={transaction.id} className='cursor-pointer'>
+                <TableRow
+                  onClick={() => navigate(`/transaction/${transaction.id}`)}
+                  key={transaction.id}
+                  className='cursor-pointer'
+                >
                   <TableCell className='w-8'>
                     <div className='flex-shrink-0 w-8 h-8 flex items-center justify-center text-gray-400'>
                       {transaction.icon}
@@ -114,22 +154,74 @@ export default function History() {
               ))
             )}
           </TableBody>
-          {/* <TableFooter>
-            <TableRow>
-              <TableCell>Total</TableCell>
-              <TableCell
-                className={`text-right ${
-                  total > 0
-                    ? "text-green-500"
-                    : total == 0
-                    ? "text-card-foreground"
-                    : "text-red-500"
-                }`}
-              >
-                {formatCurrency(total)}
+          <TableFooter>
+            <TableRow className='h-12'>
+              <TableCell colSpan={3}>
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious
+                        href='#'
+                        onClick={e => {
+                          e.preventDefault();
+                          if (currentPage > 1) setCurrentPage(currentPage - 1);
+                        }}
+                        className={
+                          currentPage <= 1
+                            ? "pointer-events-none opacity-50"
+                            : ""
+                        }
+                        aria-disabled={currentPage <= 1}
+                      />
+                    </PaginationItem>
+
+                    {getPageNumbers().map((pageNum, index) => {
+                      if (pageNum < 0) {
+                        // Render ellipsis
+                        return (
+                          <PaginationItem key={`ellipsis-${index}`}>
+                            <PaginationEllipsis />
+                          </PaginationItem>
+                        );
+                      }
+
+                      return (
+                        <PaginationItem key={pageNum}>
+                          <PaginationLink
+                            href='#'
+                            onClick={e => {
+                              e.preventDefault();
+                              setCurrentPage(pageNum);
+                            }}
+                            isActive={pageNum === currentPage}
+                          >
+                            {pageNum}
+                          </PaginationLink>
+                        </PaginationItem>
+                      );
+                    })}
+
+                    <PaginationItem>
+                      <PaginationNext
+                        href='#'
+                        onClick={e => {
+                          e.preventDefault();
+                          if (currentPage < totalPages)
+                            setCurrentPage(currentPage + 1);
+                        }}
+                        className={
+                          currentPage >= totalPages
+                            ? "pointer-events-none opacity-50"
+                            : ""
+                        }
+                        aria-disabled={currentPage >= totalPages}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
               </TableCell>
             </TableRow>
-          </TableFooter> */}
+          </TableFooter>
         </Table>
       </Card>
     </div>

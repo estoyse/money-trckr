@@ -30,11 +30,12 @@ import {
 } from "../ui/select";
 import { transactionTypeParser } from "@/lib/transactionTypeParser";
 import { toast } from "sonner";
-import { useAtom } from "jotai";
-import { accountsAtom } from "@/state/atoms";
+import { useAtomValue, useSetAtom } from "jotai";
+import { accountsAtom, historyAtom } from "@/state/atoms";
 
 export default function CreateRecord() {
-  const [accounts, setAccounts] = useAtom(accountsAtom);
+  const accounts = useAtomValue(accountsAtom);
+  const setHistory = useSetAtom(historyAtom);
 
   const [isOpen, setIsOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -52,19 +53,23 @@ export default function CreateRecord() {
     }
   }, [isOpen]);
 
-  async function handleAddCard() {
+  async function handleSubmit() {
     setIsSaving(true);
     try {
       if (!amount) throw new Error("Please enter an amount");
       if (!selectedAccountId) throw new Error("Please select an account");
-      const { error } = await supabase.from("history").insert({
-        account: selectedAccountId,
-        amount: +amount,
-        transaction_date: transactionDate,
-        type,
-        description,
-        location,
-      });
+      const { data, error } = await supabase
+        .from("history")
+        .insert({
+          account: selectedAccountId,
+          amount: +amount,
+          transaction_date: transactionDate,
+          type,
+          description,
+          location,
+        })
+        .select()
+        .single();
       if (error) {
         throw error;
       }
@@ -73,18 +78,8 @@ export default function CreateRecord() {
       setLocation("");
       setIsOpen(false);
       setSelectedAccountId("");
-      setAccounts(prev =>
-        prev.map(account =>
-          account.id === selectedAccountId
-            ? {
-                ...account,
-                balance:
-                  type === 3
-                    ? account.balance + +amount
-                    : account.balance - +amount,
-              }
-            : account
-        )
+      setHistory(prev =>
+        [...prev, data].sort((a, b) => b.transaction_date - a.transaction_date)
       );
     } catch (error) {
       if (error instanceof Error) {
@@ -249,7 +244,7 @@ export default function CreateRecord() {
               </div>
             </div>
             <DialogFooter>
-              <Button onClick={handleAddCard} disabled={isSaving}>
+              <Button onClick={handleSubmit} disabled={isSaving}>
                 {isSaving && <Spinner />}
                 Add Card
               </Button>

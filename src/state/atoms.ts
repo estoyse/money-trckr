@@ -7,6 +7,8 @@ export const accountsLoadingAtom = atom(true);
 export const accountsErrorAtom = atom<PostgrestError | null>(null);
 
 export const notificationsAtom = atom<Transaction[]>([]);
+export const historyAtom = atom<Transaction[]>([]);
+export const historyLoadingAtom = atom(true);
 
 export const userOverviewAtom = atom<UserOverview>({
   expenses: 0,

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { RealtimeChannel } from "@supabase/supabase-js";
 import supabase from "@/lib/supabase";
-import TransactionDetails from "./transactionDetails";
 
 import {
   Table,
@@ -19,6 +18,7 @@ import { formatCurrency } from "@/lib/formatCurrency";
 import type { Transaction } from "@/lib/types";
 import { useAtom } from "jotai";
 import { notificationsAtom } from "@/state/atoms";
+import TransactionModal from "./transactionModal";
 
 const RecentTransactions = () => {
   const [loading, setLoading] = useState(true);
@@ -114,7 +114,7 @@ const RecentTransactions = () => {
               </TableRow>
             ) : (
               transactions.map(transaction => (
-                <TransactionDetails
+                <TransactionModal
                   key={transaction.id}
                   transaction={transaction}
                 />

@@ -45,7 +45,7 @@ import { toast } from "sonner";
 import { accountsAtom, notificationsAtom } from "@/state/atoms";
 import { useAtom, useSetAtom } from "jotai";
 
-const TransactionDetails = ({ transaction }: { transaction: Transaction }) => {
+const TransactionModal = ({ transaction }: { transaction: Transaction }) => {
   const [accounts, setAccounts] = useAtom(accountsAtom);
   const setTransactions = useSetAtom(notificationsAtom);
 
@@ -285,4 +285,4 @@ const TransactionDetails = ({ transaction }: { transaction: Transaction }) => {
     </Dialog>
   );
 };
-export default TransactionDetails;
+export default TransactionModal;

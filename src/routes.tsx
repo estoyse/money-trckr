@@ -8,6 +8,7 @@ import SignUp from "./components/auth/sign-up";
 import ForgotPassword from "./components/auth/forgot";
 import ChangePassword from "./components/auth/change-password";
 import Spinner from "./components/ui/spinner";
+import TransactionDetails from "./components/transactionDetails";
 
 export default function Routes() {
   const [loading, setLoading] = useState(true);
@@ -27,7 +28,7 @@ export default function Routes() {
       (_event, session) => {
         setSession(session);
         setLoading(false);
-      },
+      }
     );
 
     return () => {
@@ -47,18 +48,19 @@ export default function Routes() {
 
   if (loading)
     return (
-      <div className="fixed top-0 bottom-0 right-0 left-0 flex items-center justify-center">
+      <div className='fixed top-0 bottom-0 right-0 left-0 flex items-center justify-center'>
         <Spinner size={3} />
       </div>
     );
 
   return (
     <RouterRoutes>
-      <Route path="/" element={<Dashboard />} />
-      <Route path="/login" element={<Login session={session} />} />
-      <Route path="/sign-up" element={<SignUp session={session} />} />
-      <Route path="/forgot" element={<ForgotPassword />} />
-      <Route path="/change-password" element={<ChangePassword />} />
+      <Route path='/' element={<Dashboard />} />
+      <Route path='/login' element={<Login session={session} />} />
+      <Route path='/sign-up' element={<SignUp session={session} />} />
+      <Route path='/forgot' element={<ForgotPassword />} />
+      <Route path='/change-password' element={<ChangePassword />} />
+      <Route path='/transaction/:id' element={<TransactionDetails />} />
     </RouterRoutes>
   );
 }
