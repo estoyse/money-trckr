@@ -104,7 +104,7 @@ export default function CreateRecord() {
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>
             <div className='flex items-center justify-center p-4 cursor-pointer hover:bg-primary/90 lg:col-span-2 bg-primary transition-colors'>
-              <button className='flex items-center gap-3 cursor-pointer'>
+              <button className='flex items-center gap-3 cursor-pointer text-gray-50'>
                 <CirclePlus className='h-5 w-5' />
                 <span>Create Record</span>
               </button>

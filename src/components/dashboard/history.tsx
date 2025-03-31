@@ -48,7 +48,9 @@ export default function History() {
             </div>
           ))
         ) : transactions.length === 0 ? (
-          <div>No recent transactions</div>
+          <div className='p-4 text-muted-foreground text-center'>
+            No recent transactions
+          </div>
         ) : (
           transactions.map((transaction, index) => (
             <div key={index} className='flex items-start gap-4 p-4'>
