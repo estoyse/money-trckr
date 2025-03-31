@@ -143,6 +143,7 @@ button:disabled {
   display: grid;
   border-radius: 50%;
   -webkit-mask: radial-gradient(farthest-side, #0000 40%, #ededed 41%);
+  mask: radial-gradient(farthest-side, #0000 40%, #ededed 41%);
   background: linear-gradient(
         0deg,
         rgba(237, 237, 237, 0.5) 50%,
