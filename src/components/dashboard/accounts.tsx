@@ -47,8 +47,14 @@ const Accounts = () => {
 
   const [open, setOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [cardName, setCardName] = useState("");
-  const [initialBalance, setInitialBalance] = useState<number | "">("");
+
+  const [addForm, setAddForm] = useState({
+    cardName: "",
+    initialBalance: "",
+    ownerName: "",
+    ownerEmail: "",
+    ownerPhone: "",
+  });
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -57,9 +63,14 @@ const Accounts = () => {
       const { data: addedCard, error } = await supabase
         .from("user_accounts")
         .insert({
-          name: cardName,
-          balance: +initialBalance,
+          name: addForm.cardName,
+          balance: +addForm.initialBalance,
           icon: "CreditCard",
+          owner: {
+            name: addForm.ownerName,
+            email: addForm.ownerEmail,
+            phone: addForm.ownerPhone,
+          },
         })
         .select()
         .single();
@@ -70,8 +81,13 @@ const Accounts = () => {
       setAccounts(prev => [...prev, addedCard]);
 
       setOpen(false);
-      setCardName("");
-      setInitialBalance(0);
+      setAddForm({
+        cardName: "",
+        initialBalance: "",
+        ownerName: "",
+        ownerEmail: "",
+        ownerPhone: "",
+      });
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);
@@ -145,30 +161,77 @@ const Accounts = () => {
             </DialogHeader>
             <div className='grid gap-4 py-4'>
               <div className='grid items-start gap-y-2 mb-4'>
-                <Label htmlFor='amount'>Card Name</Label>
+                <Label htmlFor='cardName'>Card Name</Label>
                 <Input
-                  id='amount'
+                  id='cardName'
                   type='text'
-                  value={cardName}
-                  onChange={e => setCardName(e.target.value)}
+                  value={addForm.cardName}
+                  onChange={e =>
+                    setAddForm({ ...addForm, cardName: e.target.value })
+                  }
                   className='col-span-3'
                   autoFocus={false}
                 />
               </div>
               <div className='grid items-start gap-y-2 mb-4'>
-                <Label htmlFor='amount'>Initial Card Balance</Label>
+                <Label htmlFor='initialBalance'>Initial Card Balance</Label>
                 <Input
-                  id='amount'
+                  id='initialBalance'
                   type='number'
                   className='col-span-3'
-                  value={initialBalance}
+                  value={addForm.initialBalance}
                   onChange={e =>
-                    setInitialBalance(
-                      e.target.value === "" ? "" : +e.target.value
-                    )
+                    setAddForm({
+                      ...addForm,
+                      initialBalance: e.target.value,
+                    })
                   }
                   autoFocus={false}
                 />
+              </div>
+              <div className='grid items-start gap-y-2 mb-4'>
+                <Label htmlFor='ownerName'>Owner Name</Label>
+                <Input
+                  id='ownerName'
+                  type='text'
+                  value={addForm.ownerName}
+                  onChange={e =>
+                    setAddForm({ ...addForm, ownerName: e.target.value })
+                  }
+                  className='col-span-3'
+                  autoFocus={false}
+                />
+              </div>
+              <div className='grid items-start gap-y-2 mb-4'>
+                <Label htmlFor='ownerEmail'>Owner Email</Label>
+                <div className='flex gap-2'>
+                  <Input
+                    id='ownerEmail'
+                    type='email'
+                    value={addForm.ownerEmail}
+                    onChange={e =>
+                      setAddForm({
+                        ...addForm,
+                        ownerEmail: e.target.value,
+                      })
+                    }
+                    className='flex-1'
+                    autoFocus={false}
+                  />
+                  <Input
+                    id='ownerPhone'
+                    type='tel'
+                    value={addForm.ownerPhone}
+                    onChange={e =>
+                      setAddForm({
+                        ...addForm,
+                        ownerPhone: e.target.value,
+                      })
+                    }
+                    className='flex-1'
+                    autoFocus={false}
+                  />
+                </div>
               </div>
             </div>
             <DialogFooter>
