@@ -10,6 +10,12 @@ export interface Account {
   name: string;
   balance: number;
   icon: string;
+  created_at: string;
+  owner: {
+    name: string;
+    email: string;
+    phone: string;
+  };
 }
 
 export type Transaction = {

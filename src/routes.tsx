@@ -9,6 +9,7 @@ import ForgotPassword from "./components/auth/forgot";
 import ChangePassword from "./components/auth/change-password";
 import Spinner from "./components/ui/spinner";
 import TransactionDetails from "./components/transactionDetails";
+import AccountDetails from "./components/accountDetails";
 
 export default function Routes() {
   const [loading, setLoading] = useState(true);
@@ -61,6 +62,7 @@ export default function Routes() {
       <Route path='/forgot' element={<ForgotPassword />} />
       <Route path='/change-password' element={<ChangePassword />} />
       <Route path='/transaction/:id' element={<TransactionDetails />} />
+      <Route path='/account/:id' element={<AccountDetails />} />
     </RouterRoutes>
   );
 }

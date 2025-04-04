@@ -19,7 +19,7 @@ const useAccounts = () => {
       setLoading(true);
       const { data, error } = await supabase
         .from("user_accounts")
-        .select("id, name, balance, icon");
+        .select("id, name, balance, icon, created_at, owner");
       if (error) {
         setError(error);
       } else {

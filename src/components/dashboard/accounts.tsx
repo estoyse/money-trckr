@@ -1,4 +1,10 @@
-import { Building2, CirclePlus, CreditCard, Landmark } from "lucide-react";
+import {
+  Building2,
+  ChevronRight,
+  CirclePlus,
+  CreditCard,
+  Landmark,
+} from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { formatCurrency } from "@/lib/formatCurrency";
 import {
@@ -20,6 +26,7 @@ import { Skeleton } from "../ui/skeleton";
 import { useAtom, useAtomValue } from "jotai";
 import { accountsAtom, accountsLoadingAtom } from "@/state/atoms";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 const Accounts = () => {
   const Icon = ({ name }: { name: string }) => {
@@ -34,6 +41,7 @@ const Accounts = () => {
         return null;
     }
   };
+  const navigate = useNavigate();
   const [accounts, setAccounts] = useAtom(accountsAtom);
   const loading = useAtomValue(accountsLoadingAtom);
 
@@ -94,13 +102,21 @@ const Accounts = () => {
             <div
               key={account.id}
               className='flex items-center justify-between p-4 cursor-pointer hover:bg-muted/50'
+              onClick={() => navigate(`/account/${account.id}`)}
             >
               <div className='flex items-center gap-3'>
                 <Icon name={account.icon} />
                 <span>{account.name}</span>
               </div>
-              <div className='text-green-500'>
-                {formatCurrency(account.balance)}
+              <div className='flex items-center gap-3'>
+                <span
+                  className={
+                    account.balance > 0 ? "text-green-500" : "text-red-500"
+                  }
+                >
+                  {formatCurrency(account.balance)}
+                </span>
+                <ChevronRight />
               </div>
             </div>
           ))
