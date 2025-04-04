@@ -42,12 +42,19 @@ import { TimePicker } from "@/components/ui/clock";
 import type { Transaction } from "@/lib/types";
 import Spinner from "../ui/spinner";
 import { toast } from "sonner";
-import { accountsAtom, notificationsAtom } from "@/state/atoms";
+import { accountsAtom, historyAtom, notificationsAtom } from "@/state/atoms";
 import { useAtom, useSetAtom } from "jotai";
 
-const TransactionModal = ({ transaction }: { transaction: Transaction }) => {
+const TransactionModal = ({
+  transaction,
+  setTotal,
+}: {
+  transaction: Transaction;
+  setTotal: React.Dispatch<React.SetStateAction<number>>;
+}) => {
   const [accounts, setAccounts] = useAtom(accountsAtom);
-  const setTransactions = useSetAtom(notificationsAtom);
+  const setNotifications = useSetAtom(notificationsAtom);
+  const setHistory = useSetAtom(historyAtom);
 
   const [amount, setAmount] = useState(transaction.amount);
   const [description, setDescription] = useState("");
@@ -85,12 +92,19 @@ const TransactionModal = ({ transaction }: { transaction: Transaction }) => {
       setLoading(false);
       return;
     }
-    setTransactions(currentTransactions => {
+    setNotifications(currentTransactions => {
       const updatedTransactions: Transaction[] = currentTransactions.filter(
         currentTransaction => currentTransaction.id !== transaction.id
       );
       return updatedTransactions;
     });
+    setHistory(prev =>
+      [...prev, transaction].sort(
+        (a, b) =>
+          new Date(b.transaction_date).getTime() -
+          new Date(a.transaction_date).getTime()
+      )
+    );
     setAccounts(prev =>
       prev.map(account =>
         account.id === selectedAccountId
@@ -104,6 +118,10 @@ const TransactionModal = ({ transaction }: { transaction: Transaction }) => {
           : account
       )
     );
+    setTotal(prev => {
+      if (type === 3) return prev - amount;
+      return prev + amount;
+    });
 
     setOpen(false);
     setLoading(false);

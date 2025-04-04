@@ -117,6 +117,7 @@ const RecentTransactions = () => {
                 <TransactionModal
                   key={transaction.id}
                   transaction={transaction}
+                  setTotal={setTotal}
                 />
               ))
             )}
