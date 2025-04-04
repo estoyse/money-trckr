@@ -25,6 +25,7 @@ import { transactionTypeParser } from "@/lib/transactionTypeParser";
 import { useAtomValue } from "jotai";
 import { accountsAtom, historyAtom, historyLoadingAtom } from "@/state/atoms";
 import { useNavigate } from "react-router-dom";
+import { ChevronRight } from "lucide-react";
 
 export default function History() {
   const navigate = useNavigate();
@@ -129,25 +130,28 @@ export default function History() {
                     </span>
                   </TableCell>
                   <TableCell className='text-right'>
-                    <div className='flex flex-col items-end'>
-                      <span
-                        className={`${
-                          transaction.type !== 3
-                            ? "text-red-500"
-                            : "text-green-500"
-                        } `}
-                      >
-                        {formatCurrency(transaction.amount)}
-                      </span>
-                      <span className='text-muted-foreground'>
-                        {transactionTypeParser(transaction.type)} (
-                        {
-                          accounts.find(
-                            account => account.id === transaction.account
-                          )?.name
-                        }
-                        )
-                      </span>
+                    <div className='flex flex-row items-center justify-end'>
+                      <div className='flex flex-col items-end mr-1'>
+                        <span
+                          className={`${
+                            transaction.type !== 3
+                              ? "text-red-500"
+                              : "text-green-500"
+                          } `}
+                        >
+                          {formatCurrency(transaction.amount)}
+                        </span>
+                        <span className='text-muted-foreground'>
+                          {transactionTypeParser(transaction.type)} (
+                          {
+                            accounts.find(
+                              account => account.id === transaction.account
+                            )?.name
+                          }
+                          )
+                        </span>
+                      </div>
+                      <ChevronRight />
                     </div>
                   </TableCell>
                 </TableRow>
