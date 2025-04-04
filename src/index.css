@@ -125,6 +125,26 @@
     @apply bg-background text-foreground;
   }
 }
+/* Minimal scrollbar for Chrome, Edge, and Safari */
+::-webkit-scrollbar {
+  width: 5px; /* thin vertical scrollbar */
+  height: 5px; /* thin horizontal scrollbar */
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(100, 100, 100, 0.4); /* subtle color */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent; /* no visible track */
+}
+
+/* Firefox-specific scrollbar styling */
+* {
+  scrollbar-width: thin; /* thin scrollbar */
+  scrollbar-color: rgba(100, 100, 100, 0.4) transparent; /* thumb + track */
+}
 
 input[type="number"] {
   appearance: textfield; /* Hides default number input styling */
