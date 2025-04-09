@@ -10,7 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { accountsAtom, historyAtom, historyLoadingAtom } from "@/state/atoms";
 import { formatDate } from "@/lib/formatDate";
 import { formatCurrency } from "@/lib/formatCurrency";
-import Spinner from "./ui/spinner";
+import Spinner from "@/components/ui/spinner";
 
 export default function TransactionDetails() {
   const { id } = useParams();

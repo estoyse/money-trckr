@@ -23,7 +23,7 @@ import { accountsAtom, accountsLoadingAtom, historyAtom } from "@/state/atoms";
 import supabase from "@/lib/supabase";
 import { formatCurrency } from "@/lib/formatCurrency";
 import { formatDate } from "@/lib/formatDate";
-import Spinner from "./ui/spinner";
+import Spinner from "../components/ui/spinner";
 
 export default function AccountDetails() {
   const { id } = useParams();

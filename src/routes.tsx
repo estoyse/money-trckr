@@ -8,8 +8,8 @@ import SignUp from "./components/auth/sign-up";
 import ForgotPassword from "./components/auth/forgot";
 import ChangePassword from "./components/auth/change-password";
 import Spinner from "./components/ui/spinner";
-import TransactionDetails from "./components/transactionDetails";
-import AccountDetails from "./components/accountDetails";
+import TransactionDetails from "./pages/transactionDetails";
+import AccountDetails from "./pages/accountDetails";
 
 export default function Routes() {
   const [loading, setLoading] = useState(true);
