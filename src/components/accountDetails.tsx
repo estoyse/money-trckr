@@ -9,10 +9,20 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+} from "@/components/ui/alert-dialog";
 import { useAtom, useAtomValue } from "jotai";
 import { accountsAtom, accountsLoadingAtom, historyAtom } from "@/state/atoms";
 import supabase from "@/lib/supabase";
 import { formatCurrency } from "@/lib/formatCurrency";
+import { formatDate } from "@/lib/formatDate";
 
 export default function AccountDetails() {
   const { id } = useParams();
@@ -44,6 +54,7 @@ export default function AccountDetails() {
     ownerPhone: "",
   });
   const [isSaving, setIsSaving] = useState(false);
+  const [deleteAlertOpen, setDeleteAlertOpen] = useState(false);
 
   useEffect(() => {
     if (loading) return;
@@ -52,14 +63,6 @@ export default function AccountDetails() {
       setAccount(account);
     }
   }, [id, accounts, loading]);
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
 
   const handleSave = () => {
     setIsSaving(true);
@@ -129,29 +132,43 @@ export default function AccountDetails() {
     );
   };
 
-  const handleDelete = () => {
-    try {
-      supabase
-        .from("user_accounts")
-        .delete()
-        .eq("id", id)
-        .then(() => {
-          toast.success("Account has been successfully deleted");
-          setAccounts(prev => prev.filter(account => account.id !== id));
-          navigate("/");
-        });
-    } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("Failed to delete account");
-      }
-      return;
+  const handleDelete = async () => {
+    setDeleteAlertOpen(false);
+    const { error } = await supabase
+      .from("user_accounts")
+      .delete()
+      .eq("id", id);
+    if (error) {
+      toast.error(error.message);
+    } else {
+      toast.success("Account has been successfully deleted");
+      setAccounts(prev => prev.filter(account => account.id !== id));
+      navigate("/");
     }
   };
 
   return (
     <div className='container mx-auto py-6 px-4 max-w-5xl'>
+      <AlertDialog open={deleteAlertOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete your
+              account and remove your data from our servers.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setDeleteAlertOpen(false)}>
+              Cancel
+            </AlertDialogCancel>
+            <Button variant='destructive' onClick={handleDelete}>
+              Continue
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <div className='flex items-center mb-6'>
         <Link
           to='/'
@@ -211,7 +228,7 @@ export default function AccountDetails() {
         <div className='flex items-center gap-2'>
           <Button
             variant='destructive'
-            onClick={handleDelete}
+            onClick={() => setDeleteAlertOpen(true)}
             className='cursor-pointer'
           >
             <Trash2 className='h-4 w-4' />

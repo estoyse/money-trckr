@@ -108,14 +108,12 @@ export default function History() {
 
   useEffect(() => {
     const countHistoryItems = async () => {
-      console.log("fetched");
       const { count, error } = await supabase
         .from("history")
         .select("*", { count: "exact", head: true });
       if (error) {
         toast.error(error.message);
       } else {
-        console.log(count);
         setTotalPages(Math.ceil((count ?? 10) / itemsPerPage));
       }
     };
