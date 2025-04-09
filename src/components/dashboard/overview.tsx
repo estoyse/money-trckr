@@ -1,3 +1,6 @@
+import { useEffect } from "react";
+import supabase from "@/lib/supabase";
+import { useAtom, useAtomValue } from "jotai";
 import {
   ArrowDownIcon,
   ArrowUpIcon,
@@ -6,7 +9,6 @@ import {
 } from "lucide-react";
 import InfoCard from "@/components/ui/infoCard";
 import { ModeToggle } from "@/components/common/mode-toggle";
-import { useAtom, useAtomValue } from "jotai";
 import {
   accountsAtom,
   userOverviewAtom,
@@ -14,9 +16,31 @@ import {
 } from "@/state/atoms";
 
 export default function Overview() {
-  const [accounts] = useAtom(accountsAtom);
-  const [userOverview] = useAtom(userOverviewAtom);
-  const loading = useAtomValue(userOverviewLoadingAtom);
+  const [userOverview, setUserOverview] = useAtom(userOverviewAtom);
+  const [loading, setLoading] = useAtom(userOverviewLoadingAtom);
+  const accounts = useAtomValue(accountsAtom);
+
+  useEffect(() => {
+    const fetchUserOverview = async () => {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("users")
+        .select("expenses, income, total_balance, total_transactions");
+      if (error) {
+        console.log(error);
+      } else {
+        setUserOverview({
+          ...data[0],
+          totalBalance: data[0].total_balance,
+          totalTransactions: data[0].total_transactions,
+        });
+      }
+      setLoading(false);
+    };
+
+    // Initial fetch
+    fetchUserOverview();
+  }, [setUserOverview, setLoading]);
 
   return (
     <div>

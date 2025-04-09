@@ -92,12 +92,11 @@ const TransactionModal = ({
       setLoading(false);
       return;
     }
-    setNotifications(currentTransactions => {
-      const updatedTransactions: Transaction[] = currentTransactions.filter(
+    setNotifications(prev =>
+      prev.filter(
         currentTransaction => currentTransaction.id !== transaction.id
-      );
-      return updatedTransactions;
-    });
+      )
+    );
     setHistory(prev =>
       [...prev, transaction].sort(
         (a, b) =>

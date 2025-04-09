@@ -1,23 +1,44 @@
+import { useEffect } from "react";
+import { useAtom, useSetAtom } from "jotai";
+import { toast } from "sonner";
+import supabase from "@/lib/supabase";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Accounts from "./accounts";
 import Overview from "./overview";
 import RecentTransactions from "./recentTransactions";
 import CreateRecord from "./createRecord";
 import History from "./history";
-import useAccounts from "@/hooks/useAccounts";
-import useUserOverview from "@/hooks/useUserOverview";
-import useHistory from "@/hooks/useHistory";
-import { toast } from "sonner";
+import {
+  accountsAtom,
+  accountsLoadingAtom,
+  accountsErrorAtom,
+} from "@/state/atoms";
 
 const Dashboard = () => {
-  const { error } = useAccounts();
-  const { error: userOverviewError } = useUserOverview();
-  const { error: historyError } = useHistory();
+  const setAccounts = useSetAtom(accountsAtom);
+  const setLoading = useSetAtom(accountsLoadingAtom);
+  const [error, setError] = useAtom(accountsErrorAtom);
 
-  if (error || userOverviewError || historyError) {
-    toast.error(
-      error?.message || userOverviewError?.message || historyError?.message
-    );
+  useEffect(() => {
+    const fetchAccounts = async () => {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("user_accounts")
+        .select("id, name, balance, icon, created_at, owner");
+      if (error) {
+        setError(error);
+      } else {
+        setAccounts(data);
+      }
+      setLoading(false);
+    };
+
+    // Initial fetch
+    fetchAccounts();
+  }, [setAccounts, setError, setLoading]);
+
+  if (error) {
+    toast.error(error?.message);
   }
 
   return (

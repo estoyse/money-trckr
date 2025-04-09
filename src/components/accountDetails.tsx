@@ -1,10 +1,7 @@
-"use client";
-
 import { useEffect, useState } from "react";
-import { ArrowLeft, Calendar, PencilLine, Save } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
-
+import { ArrowLeft, Calendar, PencilLine, Save, Trash2 } from "lucide-react";
 import { Account } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,7 +9,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useParams } from "react-router-dom";
 import { useAtom, useAtomValue } from "jotai";
 import { accountsAtom, accountsLoadingAtom, historyAtom } from "@/state/atoms";
 import supabase from "@/lib/supabase";
@@ -20,6 +16,7 @@ import { formatCurrency } from "@/lib/formatCurrency";
 
 export default function AccountDetails() {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const [accounts, setAccounts] = useAtom(accountsAtom);
   const history = useAtomValue(historyAtom);
@@ -132,6 +129,27 @@ export default function AccountDetails() {
     );
   };
 
+  const handleDelete = () => {
+    try {
+      supabase
+        .from("user_accounts")
+        .delete()
+        .eq("id", id)
+        .then(() => {
+          toast.success("Account has been successfully deleted");
+          setAccounts(prev => prev.filter(account => account.id !== id));
+          navigate("/");
+        });
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Failed to delete account");
+      }
+      return;
+    }
+  };
+
   return (
     <div className='container mx-auto py-6 px-4 max-w-5xl'>
       <div className='flex items-center mb-6'>
@@ -191,6 +209,14 @@ export default function AccountDetails() {
           </p>
         </div>
         <div className='flex items-center gap-2'>
+          <Button
+            variant='destructive'
+            onClick={handleDelete}
+            className='cursor-pointer'
+          >
+            <Trash2 className='h-4 w-4' />
+            Delete
+          </Button>
           {isEditing ? (
             <Button onClick={handleSave} disabled={isSaving}>
               {isSaving ? (
