@@ -30,7 +30,7 @@ export default function TransactionDetails() {
     a => a.id === currentTransaction.account
   )!;
   return (
-    <div className='container mx-auto py-6 px-4 max-w-5xl'>
+    <div className='container mx-auto py-6 px-4 p-2 lg:p-6 max-w-7xl w-full'>
       <div className='flex items-center mb-6'>
         <Link
           to='/'

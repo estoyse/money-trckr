@@ -10,6 +10,7 @@ import ChangePassword from "./components/auth/change-password";
 import Spinner from "./components/ui/spinner";
 import TransactionDetails from "./pages/transactionDetails";
 import AccountDetails from "./pages/accountDetails";
+import Expenses from "./pages/expenses";
 
 export default function Routes() {
   const [loading, setLoading] = useState(true);
@@ -63,6 +64,7 @@ export default function Routes() {
       <Route path='/change-password' element={<ChangePassword />} />
       <Route path='/transaction/:id' element={<TransactionDetails />} />
       <Route path='/account/:id' element={<AccountDetails />} />
+      <Route path='/expenses' element={<Expenses />} />
     </RouterRoutes>
   );
 }

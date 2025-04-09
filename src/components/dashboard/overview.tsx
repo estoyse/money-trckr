@@ -56,6 +56,7 @@ export default function Overview() {
           value={-userOverview.expenses}
           loading={loading}
           color='red'
+          path='/expenses'
         />
         <InfoCard
           title='Income'
@@ -63,6 +64,7 @@ export default function Overview() {
           value={userOverview.income}
           loading={loading}
           color='green'
+          path='/income'
         />
         <InfoCard
           title='Total Balance'
@@ -70,6 +72,7 @@ export default function Overview() {
           value={accounts.reduce((acc, account) => acc + account.balance, 0)}
           loading={loading}
           color='blue'
+          path='/accounts'
         />
         <InfoCard
           title='Total Transactions'
@@ -77,6 +80,7 @@ export default function Overview() {
           value={userOverview.totalTransactions}
           loading={loading}
           color='gray'
+          path='/transactions'
         />
       </div>
     </div>

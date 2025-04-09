@@ -149,7 +149,7 @@ export default function AccountDetails() {
   };
 
   return (
-    <div className='container mx-auto py-6 px-4 max-w-5xl'>
+    <div className='container mx-auto py-6 px-4 p-2 lg:p-6 max-w-7xl w-full'>
       <AlertDialog open={deleteAlertOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
