@@ -95,17 +95,17 @@ export default function CreateRecord() {
     <div>
       <h2 className='text-2xl font-semibold py-2'>Create a Record</h2>
 
-      <Card className='divide-y divide-border grid grid-cols-1 lg:grid-cols-2 lg:divide-x text-xl overflow-hidden'>
+      <Card className='w-full overflow-hidden'>
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>
-            <div className='flex items-center justify-center p-4 cursor-pointer hover:bg-primary/90 lg:col-span-2 bg-primary transition-colors'>
+            <div className='flex items-center justify-center p-4 cursor-pointer hover:bg-primary/90 bg-primary transition-colors'>
               <button className='flex items-center gap-3 cursor-pointer text-gray-50'>
                 <CirclePlus className='h-5 w-5' />
                 <span>Create Record</span>
               </button>
             </div>
           </DialogTrigger>
-          <DialogContent className='rounded-lg'>
+          <DialogContent className='rounded-lg w-full max-w-md mx-auto px-4 sm:px-6'>
             <DialogHeader>
               <DialogTitle>Create a Transaction</DialogTitle>
               <DialogDescription>
@@ -120,7 +120,6 @@ export default function CreateRecord() {
                   id='description'
                   value={description}
                   onChange={e => setDescription(e.target.value)}
-                  className='col-span-3'
                   autoComplete='off'
                 />
               </div>
@@ -131,23 +130,22 @@ export default function CreateRecord() {
                   type='number'
                   value={amount}
                   onChange={e =>
-                    setAmount(e.target.value == "" ? "" : +e.target.value)
+                    setAmount(e.target.value === "" ? "" : +e.target.value)
                   }
-                  className='col-span-3'
                   autoFocus={false}
                   autoComplete='off'
                 />
               </div>
               <div className='grid items-start gap-y-2 mb-4'>
                 <Label>Transaction Date</Label>
-                <div className='flex gap-2'>
+                <div className='flex flex-col sm:flex-row gap-2'>
                   <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
                     <PopoverTrigger asChild>
                       <Button
                         variant={"outline"}
-                        className='w-1/2 justify-center text-left font-normal'
+                        className='w-full sm:w-1/2 justify-start font-normal'
                       >
-                        <CalendarIcon />
+                        <CalendarIcon className='mr-2 h-4 w-4' />
                         {transactionDate ? (
                           formatDate(transactionDate.toString(), false)
                         ) : (
@@ -180,25 +178,28 @@ export default function CreateRecord() {
                       />
                     </PopoverContent>
                   </Popover>
-                  <TimePicker
-                    date={transactionDate}
-                    setDate={setTransactionDate}
-                  />
+                  <div className='w-full sm:w-1/2 mt-2 sm:mt-0'>
+                    <TimePicker
+                      date={transactionDate}
+                      setDate={setTransactionDate}
+                    />
+                  </div>
                 </div>
               </div>
               <div className='grid items-start gap-y-2 mb-4'>
-                <Label htmlFor='username'>Where</Label>
+                <Label htmlFor='location'>Where</Label>
                 <Input
-                  id='username'
+                  id='location'
                   value={location}
                   onChange={e => setLocation(e.target.value)}
-                  className='col-span-3'
                 />
               </div>
               <div className='grid items-start gap-y-2'>
-                <div className='flex gap-2'>
-                  <div className='w-1/2'>
-                    <Label htmlFor='type'>Transaction Type</Label>
+                <div className='flex flex-col sm:flex-row gap-2'>
+                  <div className='w-full sm:w-1/2 mb-2 sm:mb-0'>
+                    <Label htmlFor='type' className='mb-1 block'>
+                      Transaction Type
+                    </Label>
                     <Select onValueChange={value => setType(+value)}>
                       <SelectTrigger className='' id='type'>
                         <SelectValue
@@ -215,8 +216,10 @@ export default function CreateRecord() {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className='w-1/2'>
-                    <Label htmlFor='account'>Account</Label>
+                  <div className='w-full sm:w-1/2'>
+                    <Label htmlFor='account' className='mb-1 block'>
+                      Account
+                    </Label>
                     <Select
                       onValueChange={value => setSelectedAccountId(value)}
                     >
@@ -243,10 +246,10 @@ export default function CreateRecord() {
                 </div>
               </div>
             </div>
-            <DialogFooter>
+            <DialogFooter className='flex justify-end'>
               <Button onClick={handleSubmit} disabled={isSaving}>
                 {isSaving && <Spinner />}
-                Add Card
+                Add Transaction
               </Button>
             </DialogFooter>
           </DialogContent>

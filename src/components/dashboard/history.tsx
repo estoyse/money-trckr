@@ -25,7 +25,6 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { transactionTypeParser } from "@/lib/transactionTypeParser";
-import { formatCurrency } from "@/lib/formatCurrency";
 import { formatDate } from "@/lib/formatDate";
 import { accountsAtom, historyAtom, historyLoadingAtom } from "@/state/atoms";
 import {
@@ -35,6 +34,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import formatNumber from "@/lib/formatCurrency";
 
 export default function History() {
   const navigate = useNavigate();
@@ -184,7 +184,7 @@ export default function History() {
                               : "text-green-500"
                           } `}
                         >
-                          {formatCurrency(transaction.amount)}
+                          {formatNumber(transaction.amount)}
                         </span>
                         <span className='text-muted-foreground'>
                           {transactionTypeParser(transaction.type)} (
@@ -209,7 +209,7 @@ export default function History() {
                 <Pagination>
                   <PaginationContent>
                     <PaginationItem>
-                      <div className='flex items-center space-x-2 mb-4 sm:mb-0'>
+                      <div className='flex items-center space-x-2 '>
                         <p className='text-sm text-muted-foreground'>
                           Rows per page
                         </p>

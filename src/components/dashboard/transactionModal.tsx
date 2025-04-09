@@ -15,7 +15,6 @@ import { Input } from "@/components/ui/input";
 import { TableRow, TableCell } from "@/components/ui/table";
 import { Calendar } from "@/components/ui/calendar";
 
-import { formatCurrency } from "@/lib/formatCurrency";
 import { transactionTypeParser } from "@/lib/transactionTypeParser";
 import { formatDate } from "@/lib/formatDate";
 import { cn } from "@/lib/utils";
@@ -44,6 +43,7 @@ import Spinner from "../ui/spinner";
 import { toast } from "sonner";
 import { accountsAtom, historyAtom, notificationsAtom } from "@/state/atoms";
 import { useAtom, useSetAtom } from "jotai";
+import formatNumber from "@/lib/formatCurrency";
 
 const TransactionModal = ({
   transaction,
@@ -142,7 +142,7 @@ const TransactionModal = ({
                   transaction.type !== 3 ? "text-red-500" : "text-green-500"
                 } `}
               >
-                {formatCurrency(transaction.amount)}
+                {formatNumber(transaction.amount)}
               </span>
               <span className='text-muted-foreground'>
                 {transactionTypeParser(transaction.type)} (Humo)

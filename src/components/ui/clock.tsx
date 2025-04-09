@@ -154,7 +154,7 @@ export function TimePicker({
       <PopoverTrigger asChild>
         <Button
           variant='outline'
-          className='w-[240px] justify-start text-left font-normal'
+          className='w-full justify-start text-left font-normal'
         >
           <Clock className='mr-2 h-4 w-4' />
           {displayTime}

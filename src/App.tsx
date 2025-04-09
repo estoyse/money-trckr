@@ -9,7 +9,7 @@ function App() {
       <Router>
         <Routes />
       </Router>
-      <Toaster richColors position='bottom-center' />
+      <Toaster richColors position='top-center' />
     </ThemeProvider>
   );
 }

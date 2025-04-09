@@ -125,6 +125,11 @@
     @apply bg-background text-foreground;
   }
 }
+/* * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+} */
 /* Minimal scrollbar for Chrome, Edge, and Safari */
 ::-webkit-scrollbar {
   width: 5px; /* thin vertical scrollbar */

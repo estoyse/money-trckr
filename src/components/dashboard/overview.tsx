@@ -49,7 +49,7 @@ export default function Overview() {
         <ModeToggle />
       </div>
 
-      <div className='grid grid-cols-2 lg:grid-cols-4 gap-4'>
+      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2'>
         <InfoCard
           title='Expenses'
           icon={ArrowDownIcon}
@@ -72,7 +72,6 @@ export default function Overview() {
           value={accounts.reduce((acc, account) => acc + account.balance, 0)}
           loading={loading}
           color='blue'
-          path='/accounts'
         />
         <InfoCard
           title='Total Transactions'
@@ -80,7 +79,6 @@ export default function Overview() {
           value={userOverview.totalTransactions}
           loading={loading}
           color='gray'
-          path='/transactions'
         />
       </div>
     </div>

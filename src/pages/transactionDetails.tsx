@@ -9,8 +9,8 @@ import { Separator } from "@/components/ui/separator";
 
 import { accountsAtom, historyAtom, historyLoadingAtom } from "@/state/atoms";
 import { formatDate } from "@/lib/formatDate";
-import { formatCurrency } from "@/lib/formatCurrency";
 import Spinner from "@/components/ui/spinner";
+import formatNumber from "@/lib/formatCurrency";
 
 export default function TransactionDetails() {
   const { id } = useParams();
@@ -110,7 +110,7 @@ export default function TransactionDetails() {
 
             <div>
               <h3 className='text-sm font-medium mb-2'>Items</h3>
-              <div className='rounded-md border'>
+              <div className='rounded-md border overflow-x-scroll'>
                 <table className='min-w-full divide-y divide-border'>
                   <thead>
                     <tr className='bg-muted/50'>
@@ -135,10 +135,10 @@ export default function TransactionDetails() {
                       </td>
                       <td className='px-4 py-3 whitespace-nowrap text-sm'>1</td>
                       <td className='px-4 py-3 whitespace-nowrap text-sm text-right'>
-                        {formatCurrency(currentTransaction.amount)}
+                        {formatNumber(currentTransaction.amount)}
                       </td>
                       <td className='px-4 py-3 whitespace-nowrap text-sm text-right'>
-                        {formatCurrency(currentTransaction.amount)}
+                        {formatNumber(currentTransaction.amount)}
                       </td>
                     </tr>
                   </tbody>
@@ -156,7 +156,7 @@ export default function TransactionDetails() {
             <CardContent className='space-y-4'>
               <div className='flex justify-between font-medium'>
                 <span>Total</span>
-                <span>{formatCurrency(currentTransaction.amount)}</span>
+                <span>{formatNumber(currentTransaction.amount)}</span>
               </div>
             </CardContent>
           </Card>

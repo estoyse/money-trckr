@@ -1,7 +1,7 @@
-import { formatCurrency } from "@/lib/formatCurrency";
 import { Card, CardHeader, CardTitle, CardContent } from "./card";
 import { Skeleton } from "./skeleton";
 import { useNavigate } from "react-router-dom";
+import formatNumber from "@/lib/formatCurrency";
 type InfoCardProps = {
   title: string;
   icon: React.ElementType;
@@ -40,7 +40,7 @@ const InfoCard = ({
           {loading ? (
             <Skeleton className='h-8' />
           ) : title !== "Total Transactions" ? (
-            formatCurrency(value)
+            formatNumber(value)
           ) : (
             value
           )}

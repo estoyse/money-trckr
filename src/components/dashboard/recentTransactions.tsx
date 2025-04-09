@@ -14,7 +14,7 @@ import {
 
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { formatCurrency } from "@/lib/formatCurrency";
+import formatNumber from "@/lib/formatCurrency";
 import type { Transaction } from "@/lib/types";
 import { useAtom } from "jotai";
 import { notificationsAtom } from "@/state/atoms";
@@ -134,7 +134,7 @@ const RecentTransactions = () => {
                     : "text-red-500"
                 }`}
               >
-                {formatCurrency(total)}
+                {formatNumber(total)}
               </TableCell>
             </TableRow>
           </TableFooter>

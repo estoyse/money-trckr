@@ -6,7 +6,6 @@ import {
   Landmark,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { formatCurrency } from "@/lib/formatCurrency";
 import {
   Dialog,
   DialogContent,
@@ -27,6 +26,7 @@ import { useAtom, useAtomValue } from "jotai";
 import { accountsAtom, accountsLoadingAtom } from "@/state/atoms";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import formatNumber from "@/lib/formatCurrency";
 
 const Accounts = () => {
   const Icon = ({ name }: { name: string }) => {
@@ -130,7 +130,7 @@ const Accounts = () => {
                     account.balance > 0 ? "text-green-500" : "text-red-500"
                   }
                 >
-                  {formatCurrency(account.balance)}
+                  {formatNumber(account.balance)}
                 </span>
                 <ChevronRight />
               </div>
