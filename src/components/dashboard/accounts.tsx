@@ -151,7 +151,7 @@ const Accounts = () => {
               </button>
             </div>
           </DialogTrigger>
-          <DialogContent className='rounded-lg'>
+          <DialogContent className='rounded-lg w-full max-w-md mx-auto px-4 sm:px-6 max-h-[80vh] overflow-y-auto'>
             <DialogHeader>
               <DialogTitle>Add Card</DialogTitle>
               <DialogDescription>
