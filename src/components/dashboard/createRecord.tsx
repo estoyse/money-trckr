@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import { Card } from "../ui/card";
 import {
@@ -53,6 +55,20 @@ export default function CreateRecord() {
     }
   }, [isOpen]);
 
+  useEffect(() => {
+    if (isOpen) {
+      const handleResize = () => {
+        // Small delay to let the keyboard fully appear
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+        }, 100);
+      };
+
+      window.addEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
+    }
+  }, [isOpen]);
+
   async function handleSubmit() {
     setIsSaving(true);
     try {
@@ -105,7 +121,7 @@ export default function CreateRecord() {
               </button>
             </div>
           </DialogTrigger>
-          <DialogContent className='rounded-lg w-full max-w-md mx-auto px-4 sm:px-6 max-h-[80vh] overflow-y-auto'>
+          <DialogContent className='rounded-lg w-full max-w-md mx-auto px-4 sm:px-6 max-h-[90vh] overflow-y-auto'>
             <DialogHeader>
               <DialogTitle>Create a Transaction</DialogTitle>
               <DialogDescription>
@@ -246,7 +262,7 @@ export default function CreateRecord() {
                 </div>
               </div>
             </div>
-            <DialogFooter className='flex justify-end'>
+            <DialogFooter className='flex justify-end sticky bottom-0 bg-background pt-2 pb-4'>
               <Button onClick={handleSubmit} disabled={isSaving}>
                 {isSaving && <Spinner />}
                 Add Transaction

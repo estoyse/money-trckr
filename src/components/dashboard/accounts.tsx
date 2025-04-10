@@ -218,6 +218,7 @@ const Accounts = () => {
                     className='flex-1'
                     autoFocus={false}
                   />
+
                   <Input
                     id='ownerPhone'
                     type='tel'
@@ -234,7 +235,7 @@ const Accounts = () => {
                 </div>
               </div>
             </div>
-            <DialogFooter>
+            <DialogFooter className='flex justify-end sticky bottom-0 bg-background pt-2 pb-4'>
               <Button onClick={handleSave} disabled={isSaving}>
                 {isSaving && <Spinner />}
                 Add Card
